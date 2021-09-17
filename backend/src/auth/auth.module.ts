@@ -8,6 +8,7 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { jwtConstants } from './constants';
 import { JwtStrategy } from './jwt/jwt.strategy';
+import { GithubStrategy } from './passport/github.strategy';
 import { GoogleStrategy } from './passport/google.strategy';
 
 @Module({
@@ -20,6 +21,6 @@ import { GoogleStrategy } from './passport/google.strategy';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, GoogleStrategy, JwtStrategy],
+  providers: [AuthService, GoogleStrategy, GithubStrategy, JwtStrategy],
 })
 export class AuthModule {}

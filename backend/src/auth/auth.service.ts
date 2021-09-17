@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/users.entity';
@@ -12,24 +12,25 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async googleLogin(req) {
+  async login(req, provider: 'google' | 'facebook' | 'github') {
     if (!req.user) {
-      return { message: 'No user from google' };
+      throw new UnauthorizedException('인증 오류');
     }
 
-    const { email, firstName, lastName, profileImageUrl } = req.user;
+    const { email, name, profileImageUrl } = req.user;
 
     const exist = await this.usersRepository.findOne({
       where: { email, deletedAt: null },
     });
-    if (!exist) {
-      await this.usersRepository.save({
-        provider: 'google',
-        email,
-        name: `${firstName} ${lastName}`,
-        profileImageUrl,
-      });
+    if (exist) {
+      throw new UnauthorizedException('이미 가입되어 있는 이메일입니다.');
     }
+    await this.usersRepository.save({
+      provider: provider,
+      email,
+      name,
+      profileImageUrl,
+    });
 
     const user = await this.usersRepository.findOne({
       where: { email, deletedAt: null },
