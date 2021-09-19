@@ -23,14 +23,17 @@ export class AuthService {
       where: { email, deletedAt: null },
     });
     if (exist) {
-      throw new UnauthorizedException('이미 가입되어 있는 이메일입니다.');
+      if (exist.email === email && exist.provider !== provider) {
+        throw new UnauthorizedException('이미 가입되어 있는 이메일입니다.');
+      }
+    } else {
+      await this.usersRepository.save({
+        provider: provider,
+        email,
+        name,
+        profileImageUrl,
+      });
     }
-    await this.usersRepository.save({
-      provider: provider,
-      email,
-      name,
-      profileImageUrl,
-    });
 
     const user = await this.usersRepository.findOne({
       where: { email, deletedAt: null },

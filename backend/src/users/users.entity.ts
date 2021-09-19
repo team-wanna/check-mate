@@ -33,15 +33,15 @@ export class User extends BaseEntity {
 
   @IsString()
   @Column()
-  profileImageUrl: string;
+  profileImageUrl: string | null;
 
   @IsString()
   @Column()
-  intro: string;
+  intro: string | null;
 
   @IsString()
   @Column()
-  position: 'designer' | 'ios' | 'android' | 'web' | 'server';
+  position: 'designer' | 'ios' | 'android' | 'web' | 'server' | null;
 
   @CreateDateColumn({
     name: 'created_at',

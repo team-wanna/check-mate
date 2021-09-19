@@ -8,6 +8,7 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { jwtConstants } from './constants';
 import { JwtStrategy } from './jwt/jwt.strategy';
+import { FacebookStrategy } from './passport/facebook.strategy';
 import { GithubStrategy } from './passport/github.strategy';
 import { GoogleStrategy } from './passport/google.strategy';
 
@@ -21,6 +22,12 @@ import { GoogleStrategy } from './passport/google.strategy';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, GoogleStrategy, GithubStrategy, JwtStrategy],
+  providers: [
+    AuthService,
+    GoogleStrategy,
+    FacebookStrategy,
+    GithubStrategy,
+    JwtStrategy,
+  ],
 })
 export class AuthModule {}

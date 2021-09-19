@@ -16,6 +16,16 @@ export class AuthController {
     return this.authService.login(req, 'google');
   }
 
+  @Get('facebook')
+  @UseGuards(AuthGuard('facebook'))
+  async facebookAuth(@Req() req) {}
+
+  @Get('facebook/callback')
+  @UseGuards(AuthGuard('facebook'))
+  facebookAuthRedirect(@Req() req) {
+    return this.authService.login(req, 'facebook');
+  }
+
   @Get('github')
   @UseGuards(AuthGuard('github'))
   async githubAuth(@Req() req) {}
