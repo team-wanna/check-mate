@@ -1,11 +1,14 @@
 import { Controller, Get, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiOperation } from '@nestjs/swagger';
+import { Provider } from 'src/common/types/user.provider';
 import { AuthService } from './auth.service';
 
-@Controller('auth')
+@Controller('api/auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @ApiOperation({ summary: '구글 로그인' })
   @Get('google')
   @UseGuards(AuthGuard('google'))
   async googleAuth(@Req() req) {}
@@ -13,9 +16,10 @@ export class AuthController {
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
   googleAuthRedirect(@Req() req) {
-    return this.authService.login(req, 'google');
+    return this.authService.login(req, Provider.GOOGLE);
   }
 
+  @ApiOperation({ summary: '페이스북 로그인' })
   @Get('facebook')
   @UseGuards(AuthGuard('facebook'))
   async facebookAuth(@Req() req) {}
@@ -23,9 +27,10 @@ export class AuthController {
   @Get('facebook/callback')
   @UseGuards(AuthGuard('facebook'))
   facebookAuthRedirect(@Req() req) {
-    return this.authService.login(req, 'facebook');
+    return this.authService.login(req, Provider.FACEBOOK);
   }
 
+  @ApiOperation({ summary: '깃허브 로그인' })
   @Get('github')
   @UseGuards(AuthGuard('github'))
   async githubAuth(@Req() req) {}
@@ -33,6 +38,6 @@ export class AuthController {
   @Get('github/callback')
   @UseGuards(AuthGuard('github'))
   githubAuthRedirect(@Req() req) {
-    return this.authService.login(req, 'github');
+    return this.authService.login(req, Provider.GITHUB);
   }
 }

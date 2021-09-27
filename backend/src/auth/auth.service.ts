@@ -1,6 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Provider } from 'src/common/types/user.provider';
 import { User } from 'src/users/users.entity';
 import { Repository } from 'typeorm';
 import { Payload } from './jwt/jwt.payload';
@@ -12,7 +13,7 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async login(req, provider: 'google' | 'facebook' | 'github') {
+  async login(req, provider: Provider) {
     if (!req.user) {
       throw new UnauthorizedException('인증 오류');
     }
