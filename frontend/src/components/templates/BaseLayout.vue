@@ -1,4 +1,5 @@
 <template>
+  <navigation-bar/>
   <div class="container">
     <header>
       <slot name="header"></slot>
@@ -13,8 +14,11 @@
 </template>
 
 <script>
+import NavigationBar from '@/components/UI/organisms/NavigationBar';
+
 export default {
-  name: 'BaseLayout'
+  name: 'BaseLayout',
+  components: {NavigationBar}
 }
 </script>
 
