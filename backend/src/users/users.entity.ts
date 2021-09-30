@@ -64,14 +64,6 @@ export class User extends BaseEntity {
   intro: string | null;
 
   @ApiProperty({
-    description: '포지션',
-    example: 'server',
-  })
-  @IsString()
-  @Column()
-  position: 'designer' | 'ios' | 'android' | 'web' | 'server' | null;
-
-  @ApiProperty({
     description: '가입일',
     example: '2021-09-26T22:04:38.679Z',
   })

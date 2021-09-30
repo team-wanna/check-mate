@@ -8,7 +8,6 @@ export class UserDto extends PickType(User, [
   'name',
   'profileImageUrl',
   'intro',
-  'position',
   'createdAt',
   'updatedAt',
   'deletedAt',
