@@ -44,23 +44,23 @@ export class User extends BaseEntity {
   })
   @IsNotEmpty()
   @IsString()
-  @Column()
-  name: string;
+  @Column({ default: null })
+  name: string | null;
 
   @ApiProperty({
     description: '프로필 이미지 URL',
     example: 'http://localhost:8080/media/users/simba1632737090988.jpg',
   })
   @IsString()
-  @Column()
+  @Column({ name: 'profile_image_url', default: null })
   profileImageUrl: string | null;
 
   @ApiProperty({
     description: '자기소개',
-    example: 'http://localhost:8080/media/users/simba1632737090988.jpg',
+    example: '서버 개발자 심바입니다 😎',
   })
   @IsString()
-  @Column()
+  @Column({ default: null })
   intro: string | null;
 
   @ApiProperty({
@@ -95,6 +95,7 @@ export class User extends BaseEntity {
   })
   @DeleteDateColumn({
     name: 'deleted_at',
+    default: null,
   })
   deletedAt: Date | null;
 }

@@ -12,7 +12,7 @@ async function bootstrap() {
 
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalInterceptors(new SuccessInterceptor());
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
   // http://localhost:PORT/media/users/IMAGE_FILE_NAME.extName
   app.useStaticAssets(path.join(__dirname, './common', 'uploads'), {

@@ -7,6 +7,8 @@ import { LoggerMiddleware } from './common/middlewares/logger.middleware';
 import { User } from './users/users.entity';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { ProjectsModule } from './projects/projects.module';
+import { Project } from './projects/projects.entity';
 
 @Module({
   imports: [
@@ -20,12 +22,13 @@ import { AuthModule } from './auth/auth.module';
       username: process.env.MYSQL_USERNAME,
       password: process.env.MYSQL_PASSWORD,
       database: 'check_mate',
-      entities: [User],
+      entities: [User, Project],
       synchronize: true,
       logging: true,
     }),
     UsersModule,
     AuthModule,
+    ProjectsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
