@@ -50,7 +50,7 @@ export class UsersController {
   @ApiResponseDto(UserDto)
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('profileImageFile', multerOptions('users')))
-  @Post('upload')
+  @Post('me/upload')
   uploadProfileImage(
     @CurrentUser() user,
     @UploadedFile() profileImageFile: Express.Multer.File,

@@ -24,7 +24,7 @@ export class AuthService {
       where: { email, deletedAt: null },
     });
     if (exist) {
-      if (exist.email === email && exist.provider !== provider) {
+      if (exist.provider !== provider) {
         throw new UnauthorizedException('이미 가입되어 있는 이메일입니다.');
       }
     } else {
@@ -37,10 +37,12 @@ export class AuthService {
     }
 
     const user = await this.usersRepository.findOne({
+      select: ['id', 'name', 'profileImageUrl'],
       where: { email, deletedAt: null },
     });
     const payload: Payload = { email: user.email, sub: user.id };
     return {
+      ...user,
       token: this.jwtService.sign(payload),
     };
   }
