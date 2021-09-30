@@ -25,7 +25,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
     if (!user) {
       throw new UnauthorizedException('접근 오류');
+    } else {
+      return user; // request.user
     }
-    return user; // request.user
   }
 }
