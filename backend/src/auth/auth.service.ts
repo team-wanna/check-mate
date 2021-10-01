@@ -18,7 +18,7 @@ export class AuthService {
       throw new UnauthorizedException('인증 오류');
     }
 
-    const { email, name, profileImageUrl } = req.user;
+    const { email, profileImageUrl } = req.user;
 
     const exist = await this.usersRepository.findOne({
       where: { email, deletedAt: null },
@@ -31,7 +31,6 @@ export class AuthService {
       await this.usersRepository.save({
         provider: provider,
         email,
-        name,
         profileImageUrl,
       });
     }

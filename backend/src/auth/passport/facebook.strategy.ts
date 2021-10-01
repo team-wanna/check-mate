@@ -9,7 +9,7 @@ export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
       clientID: process.env.FACEBOOK_CLIENT_ID,
       clientSecret: process.env.FACEBOOK_SECRET,
       callbackURL: `http://localhost:${process.env.PORT}/api/auth/facebook/callback`,
-      profileFields: ['emails', 'name', 'photos'],
+      profileFields: ['emails', 'photos'],
     });
   }
 
@@ -19,10 +19,9 @@ export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
     profile: any,
     done: VerifyCallback,
   ): Promise<any> {
-    const { name, emails, photos } = profile;
+    const { emails, photos } = profile;
     const user = {
       email: emails[0].value,
-      name: `${name.givenName} ${name.familyName}`,
       profileImageUrl: photos[0].value,
       accessToken,
     };
