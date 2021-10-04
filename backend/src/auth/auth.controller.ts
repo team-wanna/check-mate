@@ -1,7 +1,6 @@
 import { Controller, Get, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation } from '@nestjs/swagger';
-import { Provider } from 'src/common/types/user.provider';
 import { AuthService } from './auth.service';
 
 @Controller('api/auth')
@@ -16,7 +15,7 @@ export class AuthController {
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
   googleAuthRedirect(@Req() req) {
-    return this.authService.login(req, Provider.GOOGLE);
+    return this.authService.login(req);
   }
 
   @ApiOperation({ summary: '페이스북 로그인' })
@@ -27,7 +26,7 @@ export class AuthController {
   @Get('facebook/callback')
   @UseGuards(AuthGuard('facebook'))
   facebookAuthRedirect(@Req() req) {
-    return this.authService.login(req, Provider.FACEBOOK);
+    return this.authService.login(req);
   }
 
   @ApiOperation({ summary: '깃허브 로그인' })
@@ -38,6 +37,6 @@ export class AuthController {
   @Get('github/callback')
   @UseGuards(AuthGuard('github'))
   githubAuthRedirect(@Req() req) {
-    return this.authService.login(req, Provider.GITHUB);
+    return this.authService.login(req);
   }
 }

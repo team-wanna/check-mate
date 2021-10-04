@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
-import { Provider } from 'src/common/types/user.provider';
 import {
   BaseEntity,
   Column,
@@ -27,7 +26,7 @@ export class User extends BaseEntity {
   @IsNotEmpty()
   @IsString()
   @Column()
-  provider: Provider;
+  provider: string;
 
   @ApiProperty({
     description: '서브 아이디',
