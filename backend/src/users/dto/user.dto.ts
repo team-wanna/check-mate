@@ -4,7 +4,7 @@ import { User } from '../users.entity';
 export class UserDto extends PickType(User, [
   'id',
   'provider',
-  'email',
+  'subId',
   'name',
   'profileImageUrl',
   'intro',
