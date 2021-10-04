@@ -18,28 +18,24 @@ export class AuthService {
       throw new UnauthorizedException('인증 오류');
     }
 
-    const { email, profileImageUrl } = req.user;
+    const { subId, profileImageUrl } = req.user;
 
     const exist = await this.usersRepository.findOne({
-      where: { email, deletedAt: null },
+      where: { subId, deletedAt: null },
     });
-    if (exist) {
-      if (exist.provider !== provider) {
-        throw new UnauthorizedException('이미 가입되어 있는 이메일입니다.');
-      }
-    } else {
+    if (!exist) {
       await this.usersRepository.save({
         provider: provider,
-        email,
+        subId,
         profileImageUrl,
       });
     }
 
     const user = await this.usersRepository.findOne({
       select: ['id', 'name', 'profileImageUrl'],
-      where: { email, deletedAt: null },
+      where: { subId, deletedAt: null },
     });
-    const payload: Payload = { email: user.email, sub: user.id };
+    const payload: Payload = { subId, sub: user.id };
     return {
       ...user,
       token: this.jwtService.sign(payload),

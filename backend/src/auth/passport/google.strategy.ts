@@ -9,7 +9,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_SECRET,
       callbackURL: `http://localhost:${process.env.PORT}/api/auth/google/callback`,
-      scope: ['email', 'profile'],
+      scope: ['profile'],
     });
   }
 
@@ -19,9 +19,9 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     profile: any,
     done: VerifyCallback,
   ): Promise<any> {
-    const { emails, photos } = profile;
+    const { id, photos } = profile;
     const user = {
-      email: emails[0].value,
+      subId: id,
       profileImageUrl: photos[0].value,
       accessToken,
     };

@@ -18,9 +18,9 @@ export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
     profile: any,
     done: VerifyCallback,
   ): Promise<any> {
-    const { emails, photos } = profile;
+    const { id, photos } = profile;
     const user = {
-      email: emails[0].value,
+      subId: id,
       profileImageUrl: photos[0].value,
       accessToken,
     };
