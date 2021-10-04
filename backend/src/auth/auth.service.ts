@@ -20,7 +20,7 @@ export class AuthService {
     const { provider, subId, profileImageUrl } = req.user;
 
     const exist = await this.usersRepository.findOne({
-      where: { subId, deletedAt: null },
+      where: { provider, subId, deletedAt: null },
     });
     if (!exist) {
       await this.usersRepository.save({
