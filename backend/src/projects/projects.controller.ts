@@ -24,22 +24,50 @@ import { ProjectsService } from './projects.service';
 export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) {}
 
+  @ApiOperation({ summary: '모든 프로젝트 가져오기' })
+  @ApiResponseDto(ProjectDto)
   @Get()
   getAllProjects() {
     return this.projectsService.getAllProjects();
   }
 
+  @ApiOperation({ summary: '프로젝트 가져오기' })
+  @ApiResponseDto(ProjectDto)
   @Get(':id')
   getProject(@Param('id', ParseIntPipe) id: number) {
     return this.projectsService.getProject(id);
   }
 
+  @ApiOperation({ summary: '프로젝트 생성하기' })
+  @ApiResponseDto(ProjectDto)
   @UseGuards(JwtAuthGuard)
   @Post()
   createProject(@CurrentUser() user, @Body() body: ProjectDto) {
     return this.projectsService.createProject(user, body);
   }
 
+  @ApiOperation({ summary: '프로젝트 수정하기' })
+  @ApiResponseDto(ProjectDto)
+  @UseGuards(JwtAuthGuard)
+  @Put(':id')
+  updateProject(
+    @CurrentUser() user,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: ProjectDto,
+  ) {
+    return this.projectsService.updateProject(user, id, body);
+  }
+
+  @ApiOperation({ summary: '프로젝트 삭제하기' })
+  @ApiResponseDto(ProjectDto)
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id')
+  deleteProject(@CurrentUser() user, @Param('id', ParseIntPipe) id: number) {
+    return this.projectsService.deleteProject(user, id);
+  }
+
+  @ApiOperation({ summary: '프로젝트 로고 이미지 수정하기' })
+  @ApiResponseDto(ProjectDto)
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(
     FileInterceptor('projectLogoImageFile', multerOptions('projects')),
@@ -55,21 +83,5 @@ export class ProjectsController {
       id,
       projectLogoImageFile,
     );
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Put(':id')
-  updateProject(
-    @CurrentUser() user,
-    @Param('id', ParseIntPipe) id: number,
-    @Body() body: ProjectDto,
-  ) {
-    return this.projectsService.updateProject(user, id, body);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Delete(':id')
-  deleteProject(@CurrentUser() user, @Param('id', ParseIntPipe) id: number) {
-    return this.projectsService.deleteProject(user, id);
   }
 }

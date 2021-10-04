@@ -3,14 +3,14 @@ import {
   Controller,
   Delete,
   Get,
-  Patch,
   Post,
+  Put,
   UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiUnprocessableEntityResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { ApiResponseDto } from 'src/common/decorators/api-response-dto.decorator';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
@@ -33,13 +33,12 @@ export class UsersController {
   @ApiOperation({ summary: '내 정보 수정하기' })
   @ApiResponseDto(UserDto)
   @UseGuards(JwtAuthGuard)
-  @Patch('me')
-  updateUser(@CurrentUser() user, @Body() body) {
+  @Put('me')
+  updateUser(@CurrentUser() user, @Body() body: UserDto) {
     return this.usersService.updateUser(user, body);
   }
 
   @ApiOperation({ summary: '회원 탈퇴하기' })
-  @ApiResponseDto(UserDto)
   @UseGuards(JwtAuthGuard)
   @Delete('me')
   deleteUser(@CurrentUser() user) {
