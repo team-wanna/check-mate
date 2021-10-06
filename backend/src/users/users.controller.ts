@@ -10,7 +10,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { ApiResponseDto } from 'src/common/decorators/api-response-dto.decorator';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
@@ -40,6 +40,7 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: '회원 탈퇴하기' })
+  @ApiOkResponse({ description: '성공' })
   @UseGuards(JwtAuthGuard)
   @Delete('me')
   deleteUser(@CurrentUser() user) {

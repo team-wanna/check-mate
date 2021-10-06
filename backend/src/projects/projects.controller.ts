@@ -5,19 +5,21 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
-  Put,
   UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { ApiResponseDto } from 'src/common/decorators/api-response-dto.decorator';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { multerOptions } from 'src/common/utils/multer.options';
+import { CreateProjectDto } from './dto/create-project.dto';
 import { ProjectDto } from './dto/project.dto';
+import { UpdateProjectDto } from './dto/update-project.dto';
 import { ProjectsService } from './projects.service';
 
 @Controller('api/projects')
@@ -42,24 +44,24 @@ export class ProjectsController {
   @ApiResponseDto(ProjectDto)
   @UseGuards(JwtAuthGuard)
   @Post()
-  createProject(@CurrentUser() user, @Body() body: ProjectDto) {
+  createProject(@CurrentUser() user, @Body() body: CreateProjectDto) {
     return this.projectsService.createProject(user, body);
   }
 
   @ApiOperation({ summary: '프로젝트 수정하기' })
   @ApiResponseDto(ProjectDto)
   @UseGuards(JwtAuthGuard)
-  @Put(':id')
+  @Patch(':id')
   updateProject(
     @CurrentUser() user,
     @Param('id', ParseIntPipe) id: number,
-    @Body() body: ProjectDto,
+    @Body() body: UpdateProjectDto,
   ) {
     return this.projectsService.updateProject(user, id, body);
   }
 
   @ApiOperation({ summary: '프로젝트 삭제하기' })
-  @ApiResponseDto(ProjectDto)
+  @ApiOkResponse({ description: '성공' })
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   deleteProject(@CurrentUser() user, @Param('id', ParseIntPipe) id: number) {

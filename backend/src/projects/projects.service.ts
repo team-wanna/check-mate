@@ -18,10 +18,13 @@ export class ProjectsService {
       // TO-DO: skills도 포함하여 리턴하도록
       // TO-DO: 필터링 적용
       select: [
-        'title',
-        'logoImageUrl',
+        'id',
         'ownerId',
+        'logoImageUrl',
+        'title',
+        'intro',
         'location',
+        'isClosed',
         'createdAt',
         'updatedAt',
       ],
@@ -31,19 +34,17 @@ export class ProjectsService {
 
     console.log(projects);
 
-    if (projects.length === 0) {
-      return { message: '👻 등록된 프로젝트가 없어요 🌫' };
-    } else {
-      return projects;
-    }
+    return projects;
   }
 
   async getProject(id) {
-    const project = await this.projectsRepository.findOne(id, {
-      where: { deletedAt: null },
+    const project = await this.projectsRepository.find({
+      where: { id, deletedAt: null },
     });
 
-    if (!project) {
+    console.log(project);
+
+    if (project.length === 0) {
       throw new NotFoundException('👻 존재하지 않는 프로젝트에요 🌫');
     } else {
       return project;
@@ -53,7 +54,7 @@ export class ProjectsService {
   async createProject(user, data) {
     const { title, logoImageUrl, intro, description, location } = data;
 
-    return await this.projectsRepository.save({
+    const newProject = await this.projectsRepository.save({
       ownerId: user.id,
       title,
       logoImageUrl: logoImageUrl || null,
@@ -61,6 +62,41 @@ export class ProjectsService {
       description,
       location,
     });
+
+    return await this.projectsRepository.find({
+      where: { id: newProject.id, deletedAt: null },
+    });
+  }
+
+  async updateProject(user, id, data) {
+    const project = await this.projectsRepository.findOne({
+      select: ['ownerId'],
+      where: { id, deletedAt: null },
+    });
+
+    if (!project) {
+      throw new NotFoundException('👻 존재하지 않는 프로젝트에요 🌫');
+    } else if (user.id !== project.ownerId) {
+      throw new ForbiddenException('👻 프로젝트 등록자만 변경할 수 있어요 🌫');
+    } else {
+      await this.projectsRepository.update(id, { ...data });
+      return await this.projectsRepository.find({ where: { id } });
+    }
+  }
+
+  async deleteProject(user, id) {
+    const project = await this.projectsRepository.findOne({
+      select: ['ownerId'],
+      where: { id, deletedAt: null },
+    });
+
+    if (!project) {
+      throw new NotFoundException('👻 존재하지 않는 프로젝트에요 🌫');
+    } else if (user.id !== project.ownerId) {
+      throw new ForbiddenException('👻 프로젝트 등록자만 변경할 수 있어요 🌫');
+    } else {
+      await this.projectsRepository.softDelete(id);
+    }
   }
 
   async uploadProjectLogoImage(
@@ -85,38 +121,7 @@ export class ProjectsService {
         logoImageUrl: `http://localhost:${process.env.PORT}/media/${projectLogoImageUrl}`,
       });
 
-      return await this.projectsRepository.findOne(id);
-    }
-  }
-
-  async updateProject(user, id, data) {
-    const project = await this.projectsRepository.findOne({
-      select: ['ownerId'],
-      where: { id, deletedAt: null },
-    });
-
-    if (!project) {
-      throw new NotFoundException('👻 존재하지 않는 프로젝트에요 🌫');
-    } else if (user.id !== project.ownerId) {
-      throw new ForbiddenException('👻 프로젝트 등록자만 변경할 수 있어요 🌫');
-    } else {
-      await this.projectsRepository.update(id, { ...data });
-      return await this.projectsRepository.findOne(id);
-    }
-  }
-
-  async deleteProject(user, id) {
-    const project = await this.projectsRepository.findOne({
-      select: ['ownerId'],
-      where: { id, deletedAt: null },
-    });
-
-    if (!project) {
-      throw new NotFoundException('👻 존재하지 않는 프로젝트에요 🌫');
-    } else if (user.id !== project.ownerId) {
-      throw new ForbiddenException('👻 프로젝트 등록자만 변경할 수 있어요 🌫');
-    } else {
-      await this.projectsRepository.softDelete(id);
+      return await this.projectsRepository.find({ where: { id } });
     }
   }
 }
