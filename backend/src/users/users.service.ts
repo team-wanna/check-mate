@@ -21,7 +21,10 @@ export class UsersService {
     const { id } = user;
 
     if (data.name) {
-      // TO-DO: 닉네임 정규 표현식 추가하기
+      const regex = /[^a-zA-Z0-9ㄱ-ㅎㅏ-ㅣ가-힣]/;
+      if (regex.test(data.name) || data.name === '') {
+        throw new BadRequestException('👻 이름을 올바르게 입력해 주세요 🌫');
+      }
 
       const exist = await this.usersRepository.findOne({
         select: ['id', 'name'],

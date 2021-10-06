@@ -41,9 +41,10 @@ export class User extends BaseEntity {
     description: '이름(닉네임)',
     example: '심바',
   })
+  @IsNotEmpty()
   @IsString()
   @Column({ default: null })
-  name: string | null;
+  name: string;
 
   @ApiProperty({
     description: '프로필 이미지 URL',
