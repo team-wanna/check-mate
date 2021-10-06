@@ -56,11 +56,8 @@ export class Project extends BaseEntity {
 
   @ApiProperty({
     description: '프로젝트 상세 설명',
-    example: `함께 웹 서비스 개발 하실 분 모집합니다!!
-
-    회의는 온라인으로 진행할 예정이고 시간은 아직 미정이며,
-    지원하실분은 🔴🔺🟥로 들어와 주시기 바랍니다🤗
-    `,
+    example:
+      '함께 웹 서비스 개발 하실 분 모집합니다!!\n\n회의는 온라인으로 진행할 예정이고 시간은 아직 미정이며,\n지원하실분은 🔴🔺🟥로 들어와 주시기 바랍니다🤗',
   })
   @IsNotEmpty()
   @IsString()

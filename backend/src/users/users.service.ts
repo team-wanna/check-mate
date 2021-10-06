@@ -1,4 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './users.entity';
@@ -9,19 +13,27 @@ export class UsersService {
     @InjectRepository(User) private usersRepository: Repository<User>,
   ) {}
 
+  getCurrentUser(user) {
+    return [user];
+  }
+
   async updateUser(user, data) {
     const { id } = user;
 
     if (data.name) {
+      const regex = /[^a-zA-Z0-9ㄱ-ㅎㅏ-ㅣ가-힣]/;
+      if (regex.test(data.name) || data.name === '') {
+        throw new BadRequestException('👻 이름을 올바르게 입력해 주세요 🌫');
+      }
+
       const exist = await this.usersRepository.findOne({
+        select: ['id', 'name'],
         where: { name: data.name },
       });
       if (exist) {
-        if (exist.id === id) {
-          throw new ConflictException('변경된 내용이 없습니다.');
-        } else {
+        if (exist.id !== id) {
           throw new ConflictException(
-            '이미 사용 중인 이름입니다. 다른 이름을 사용해 주세요.',
+            '👻 이미 사용 중인 이름이에요! 다른 이름을 입력해 주세요 🌫',
           );
         }
       }
@@ -32,7 +44,7 @@ export class UsersService {
       ...data,
     });
 
-    return await this.usersRepository.findOne(id);
+    return await this.usersRepository.find({ where: { id } });
   }
 
   async deleteUser(user) {
@@ -49,6 +61,6 @@ export class UsersService {
       profileImageUrl: `http://localhost:${process.env.PORT}/media/${profileImageUrl}`,
     });
 
-    return await this.usersRepository.findOne(id);
+    return await this.usersRepository.find({ where: { id } });
   }
 }

@@ -35,9 +35,11 @@ export class AuthService {
       where: { subId, deletedAt: null },
     });
     const payload: Payload = { subId, sub: user.id };
-    return {
-      ...user,
-      token: this.jwtService.sign(payload),
-    };
+    return [
+      {
+        ...user,
+        token: this.jwtService.sign(payload),
+      },
+    ];
   }
 }
