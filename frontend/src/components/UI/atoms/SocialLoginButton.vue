@@ -1,5 +1,5 @@
 <template>
-  <google-logo v-if="$props.type === 'google'" class="logo logo--google" />
+  <google-logo v-if="$props.type === 'google'" class="logo logo--google" @click="clickLoginBtn" />
   <fa
     v-else
     :icon="['fab', iconName]"
