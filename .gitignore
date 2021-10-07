@@ -7,7 +7,7 @@
 
 # compiled output
 node_modules
-/dist
+dist
 
 # local env files
 .env.local
@@ -23,8 +23,8 @@ pnpm-debug.log*
 lerna-debug.log*
 
 # Tests
-/coverage
-/.nyc_output
+coverage
+.nyc_output
 
 # Editor directories and files
 .idea
