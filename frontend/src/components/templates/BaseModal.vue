@@ -4,12 +4,11 @@
       <div class="container">
         <header class="base-modal-header">
           <div class="logo-container">
-            <fa :icon="['fas', 'chess']" class="icon icon--medium" />
-            <p>Check Mate</p>
+            <fa :icon="['fas', 'chess']" class="icon icon--large" />
           </div>
           <fa
             :icon="['far', 'window-close']"
-            class="icon icon--small"
+            class="icon icon--large"
             @click="clickClose"
           />
         </header>
@@ -25,21 +24,21 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from "vue";
+import { defineComponent, computed } from 'vue';
 
 export default defineComponent({
-  name: "BaseModal",
+  name: 'BaseModal',
   props: {
     visible: {
       type: Boolean,
       default: false,
     },
   },
-  emits: ["update:visible"],
+  emits: ['update:visible'],
   setup(props, { emit }) {
     const isShow = computed({
       get: () => props.visible,
-      set: (value) => emit("update:visible", value),
+      set: (value) => emit('update:visible', value),
     });
 
     const clickClose = () => {
@@ -79,7 +78,7 @@ export default defineComponent({
   align-items: center;
   border-radius: 5px;
   background-color: #f8f9fa;
-  height: 48px;
+  height: 60px;
   padding: 0 15px;
   .logo-container {
     display: flex;
@@ -90,17 +89,12 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 40px;
+  margin: 80px;
 }
 .icon {
   margin: 4px;
 }
-.icon--small {
-  width: 24px;
-  height: 24px;
-}
-.icon--medium {
-  width: 36px;
-  height: 36px;
+.icon--large {
+  font-size: $font-size-large;
 }
 </style>

@@ -1,19 +1,19 @@
 <template>
   <base-modal v-model:visible="isShow">
     <template #main>
-      <h1>체크메이트에 오신 것을 환영합니다!</h1>
+      <p class="title">체크메이트에 오신 것을 환영합니다!</p>
       <div class="login-btn-container">
-        <section>
+        <section class="login-btn-container__content">
           <social-login-button type="google" />
-          <p>Google 로그인</p>
+          <p class="content-title">Google 로그인</p>
         </section>
-        <section>
+        <section class="login-btn-container__content">
           <social-login-button type="facebook" />
-          <p>Facebook 로그인</p>
+          <p class="content-title">Facebook 로그인</p>
         </section>
-        <section>
+        <section class="login-btn-container__content">
           <social-login-button type="github" />
-          <p>Github 로그인</p>
+          <p class="content-title">Github 로그인</p>
         </section>
       </div>
     </template>
@@ -21,11 +21,12 @@
 </template>
 
 <script lang="ts">
-import BaseModal from "@/components/templates/BaseModal.vue";
-import SocialLoginButton from "@/components/UI/atoms/SocialLoginButton.vue";
-import { computed, defineComponent } from "vue";
+import { computed, defineComponent } from 'vue';
+import BaseModal from '@/components/templates/BaseModal.vue';
+import SocialLoginButton from '@/components/UI/atoms/SocialLoginButton.vue';
+
 export default defineComponent({
-  name: "LoginModal",
+  name: 'LoginModal',
   components: { SocialLoginButton, BaseModal },
   props: {
     visible: {
@@ -33,11 +34,11 @@ export default defineComponent({
       default: false,
     },
   },
-  emits: ["update:visible"],
+  emits: ['update:visible'],
   setup(props, { emit }) {
     const isShow = computed({
       get: () => props.visible,
-      set: (value) => emit("update:visible", value),
+      set: (value) => emit('update:visible', value),
     });
 
     return {
@@ -48,17 +49,21 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+.title {
+  font-size: $font-size-large;
+}
 .login-btn-container {
-  margin-top: 30px;
+  margin-top: 60px;
   display: flex;
   align-items: center;
-  section {
+  &__content {
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 225px;
-    p {
+    height: 200px;
+    .content-title {
       margin: 8px 0;
+      font-size: $font-size-medium;
     }
   }
 }
