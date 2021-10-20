@@ -9,6 +9,7 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { ProjectsModule } from './projects/projects.module';
 import { Project } from './entities/projects.entity';
+import { Skill } from './entities/skills.entity';
 
 @Module({
   imports: [
@@ -22,7 +23,7 @@ import { Project } from './entities/projects.entity';
       username: process.env.MYSQL_USERNAME,
       password: process.env.MYSQL_PASSWORD,
       database: 'check_mate',
-      entities: [User, Project],
+      entities: [User, Project, Skill],
       synchronize: true,
       logging: true,
     }),
