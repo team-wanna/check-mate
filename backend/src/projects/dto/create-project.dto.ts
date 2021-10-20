@@ -1,5 +1,5 @@
 import { PickType } from '@nestjs/swagger';
-import { Project } from '../projects.entity';
+import { Project } from '../../entities/projects.entity';
 
 export class CreateProjectDto extends PickType(Project, [
   'ownerId',

@@ -4,11 +4,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { LoggerMiddleware } from './common/middlewares/logger.middleware';
-import { User } from './users/users.entity';
+import { User } from './entities/users.entity';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { ProjectsModule } from './projects/projects.module';
-import { Project } from './projects/projects.entity';
+import { Project } from './entities/projects.entity';
 
 @Module({
   imports: [
