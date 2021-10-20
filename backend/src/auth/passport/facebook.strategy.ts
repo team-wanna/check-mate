@@ -8,7 +8,7 @@ export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
     super({
       clientID: process.env.FACEBOOK_CLIENT_ID,
       clientSecret: process.env.FACEBOOK_SECRET,
-      callbackURL: `http://localhost:${process.env.PORT}/api/auth/facebook/callback`,
+      callbackURL: `http://localhost:${process.env.PORT_FE}/auth/facebook`,
       profileFields: ['emails', 'photos'],
     });
   }
@@ -24,7 +24,6 @@ export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
       provider,
       subId: id,
       profileImageUrl: photos[0].value,
-      accessToken,
     };
     done(null, user);
   }

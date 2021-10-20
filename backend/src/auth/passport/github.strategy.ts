@@ -8,7 +8,7 @@ export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
     super({
       clientID: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_SECRET,
-      redirectUri: `http://localhost:${process.env.PORT}/api/auth/google/callback`,
+      redirectUri: `http://localhost:${process.env.PORT_FE}/auth/github`,
     });
   }
 
@@ -23,7 +23,6 @@ export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
       provider,
       subId: id,
       profileImageUrl: photos[0].value,
-      accessToken,
     };
     done(null, user);
   }
