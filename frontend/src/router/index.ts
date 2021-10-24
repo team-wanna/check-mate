@@ -7,6 +7,14 @@ const routes: Array<RouteRecordRaw> = [
     name: 'Home',
     component: Home,
   },
+  {
+    path: '/auth/google',
+    name: 'GoogleLogin',
+    component: () =>
+      import(
+        /* webpackChunkName: "googleLogin" */ '@/components/pages/GoogleLogin.vue'
+      ),
+  },
 ];
 
 const router = createRouter({

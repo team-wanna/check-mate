@@ -13,7 +13,7 @@ import {
   faFacebookSquare,
 } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import store from './store';
+import store from './store/index';
 import router from './router';
 import App from './App.vue';
 

@@ -1,8 +1,7 @@
 <template>
   <google-logo
-    id="google-login-btn"
-    v-if="$props.type === 'google'"
     class="logo logo--google"
+    v-if="$props.type === 'google'"
     @click="clickLoginBtn"
   />
   <fa
@@ -16,7 +15,6 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
-import axios from 'axios';
 import { SocialType } from '@/utils/define';
 import GoogleLogo from '@/assets/GoogleLogo.vue';
 
@@ -33,9 +31,8 @@ export default defineComponent({
     const iconName =
       props.type === 'google' ? 'google' : `${props.type}-square`;
 
-    const clickLoginBtn = async () => {
-      window.location.href = `http://localhost:8081/api/auth/${props.type}`;
-      await axios.get(`http://localhost:8081/api/auth/${props.type}`);
+    const clickLoginBtn = () => {
+      window.location.href = `${process.env.VUE_APP_BACKEND_URL}/api/auth/${props.type}`;
     };
 
     return {
@@ -53,8 +50,6 @@ export default defineComponent({
   border-radius: 10px;
   &--google {
     margin: 10px 20px;
-    padding: 20px;
-    box-shadow: 0 5px 25px rgb(0 0 0 / 15%);
   }
   &--facebook {
     color: #4267b2;
