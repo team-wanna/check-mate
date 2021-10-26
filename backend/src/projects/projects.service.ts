@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { getConnection, Repository } from 'typeorm';
 import { Project } from '../entities/projects.entity';
 
 @Injectable()
@@ -82,6 +82,52 @@ export class ProjectsService {
       await this.projectsRepository.update(id, { ...data });
       return await this.projectsRepository.find({ where: { id } });
     }
+  }
+
+  async addProjectSkill(user, projectId, data) {
+    const { id } = user;
+    const project = await this.projectsRepository.findOne({
+      select: ['ownerId'],
+      where: { id, deletedAt: null },
+    });
+
+    if (!project) {
+      throw new NotFoundException('👻 존재하지 않는 프로젝트에요 🌫');
+    } else if (user.id !== project.ownerId) {
+      throw new ForbiddenException('👻 프로젝트 등록자만 변경할 수 있어요 🌫');
+    }
+
+    const { skillId } = data;
+
+    // 조인 테이블에 추가
+    await getConnection()
+      .createQueryBuilder()
+      .relation(Project, 'skills')
+      .of(projectId)
+      .add(skillId);
+  }
+
+  async deleteProjectSkill(user, projectId, data) {
+    const { id } = user;
+    const project = await this.projectsRepository.findOne({
+      select: ['ownerId'],
+      where: { id, deletedAt: null },
+    });
+
+    if (!project) {
+      throw new NotFoundException('👻 존재하지 않는 프로젝트에요 🌫');
+    } else if (user.id !== project.ownerId) {
+      throw new ForbiddenException('👻 프로젝트 등록자만 변경할 수 있어요 🌫');
+    }
+
+    const { skillId } = data;
+
+    // 조인 테이블에 삭제
+    await getConnection()
+      .createQueryBuilder()
+      .relation(Project, 'skills')
+      .of(projectId)
+      .remove(skillId);
   }
 
   async deleteProject(user, id) {

@@ -4,7 +4,7 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { getConnection, getRepository, Repository } from 'typeorm';
 import { User } from '../entities/users.entity';
 
 @Injectable()
@@ -45,6 +45,30 @@ export class UsersService {
     });
 
     return await this.usersRepository.find({ where: { id } });
+  }
+
+  async addUserSkill(user, data) {
+    const userId = user.id;
+    const { skillId } = data;
+
+    // 조인 테이블에 추가
+    await getConnection()
+      .createQueryBuilder()
+      .relation(User, 'skills')
+      .of(userId)
+      .add(skillId);
+  }
+
+  async deleteUserSkill(user, data) {
+    const userId = user.id;
+    const { skillId } = data;
+
+    // 조인 테이블에서 삭제
+    await getConnection()
+      .createQueryBuilder()
+      .relation(User, 'skills')
+      .of(userId)
+      .remove(skillId);
   }
 
   async deleteUser(user) {

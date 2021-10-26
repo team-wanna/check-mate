@@ -39,6 +39,22 @@ export class UsersController {
     return this.usersService.updateUser(user, body);
   }
 
+  @ApiOperation({ summary: '유저 스킬 추가하기' })
+  @ApiOkResponse({ description: '성공' })
+  @UseGuards(JwtAuthGuard)
+  @Post('me/skills')
+  addUserSkill(@CurrentUser() user, @Body() body) {
+    return this.usersService.addUserSkill(user, body);
+  }
+
+  @ApiOperation({ summary: '유저 스킬 삭제하기' })
+  @ApiOkResponse({ description: '성공' })
+  @UseGuards(JwtAuthGuard)
+  @Delete('me/skills')
+  deleteUserSkill(@CurrentUser() user, @Body() body) {
+    return this.usersService.deleteUserSkill(user, body);
+  }
+
   @ApiOperation({ summary: '회원 탈퇴하기' })
   @ApiOkResponse({ description: '성공' })
   @UseGuards(JwtAuthGuard)

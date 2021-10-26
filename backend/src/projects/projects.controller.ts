@@ -60,6 +60,28 @@ export class ProjectsController {
     return this.projectsService.updateProject(user, id, body);
   }
 
+  // 프로젝트 스킬 등록
+  @Post(':id/skills')
+  addUserSkill(
+    @CurrentUser() user,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body,
+  ) {
+    return this.projectsService.addProjectSkill(user, id, body);
+  }
+
+  @ApiOperation({ summary: '프로젝트 스킬 삭제하기' })
+  @ApiOkResponse({ description: '성공' })
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id/skills')
+  deleteUserSkill(
+    @CurrentUser() user,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body,
+  ) {
+    return this.projectsService.deleteProjectSkill(user, id, body);
+  }
+
   @ApiOperation({ summary: '프로젝트 삭제하기' })
   @ApiOkResponse({ description: '성공' })
   @UseGuards(JwtAuthGuard)
