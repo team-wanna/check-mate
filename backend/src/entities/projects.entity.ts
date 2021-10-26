@@ -6,9 +6,12 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Skill } from './skills.entity';
 
 @Entity()
 export class Project extends BaseEntity {
@@ -118,4 +121,13 @@ export class Project extends BaseEntity {
     default: null,
   })
   deletedAt: Date | null;
+
+  // 관계 설정
+  @ManyToMany(() => Skill, (skills) => skills.projects)
+  @JoinTable({
+    name: 'project_skill',
+    joinColumn: { name: 'project_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'skill_id', referencedColumnName: 'id' },
+  })
+  skills: Skill[];
 }
