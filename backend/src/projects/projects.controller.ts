@@ -17,6 +17,7 @@ import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { ApiResponseDto } from 'src/common/decorators/api-response-dto.decorator';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { multerOptions } from 'src/common/utils/multer.options';
+import { UpdateSkillDto } from 'src/dto/update-skill.dto';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { ProjectDto } from './dto/project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
@@ -58,6 +59,30 @@ export class ProjectsController {
     @Body() body: UpdateProjectDto,
   ) {
     return this.projectsService.updateProject(user, id, body);
+  }
+
+  @ApiOperation({ summary: '프로젝트 스킬 추가하기' })
+  @ApiOkResponse({ description: '성공' })
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/skills')
+  addUserSkill(
+    @CurrentUser() user,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: UpdateSkillDto,
+  ) {
+    return this.projectsService.addProjectSkill(user, id, body);
+  }
+
+  @ApiOperation({ summary: '프로젝트 스킬 삭제하기' })
+  @ApiOkResponse({ description: '성공' })
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id/skills')
+  deleteUserSkill(
+    @CurrentUser() user,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: UpdateSkillDto,
+  ) {
+    return this.projectsService.deleteProjectSkill(user, id, body);
   }
 
   @ApiOperation({ summary: '프로젝트 삭제하기' })

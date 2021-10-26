@@ -15,6 +15,7 @@ import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { ApiResponseDto } from 'src/common/decorators/api-response-dto.decorator';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { multerOptions } from 'src/common/utils/multer.options';
+import { UpdateSkillDto } from 'src/dto/update-skill.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserDto } from './dto/user.dto';
 import { UsersService } from './users.service';
@@ -37,6 +38,22 @@ export class UsersController {
   @Patch('me')
   updateUser(@CurrentUser() user, @Body() body: UpdateUserDto) {
     return this.usersService.updateUser(user, body);
+  }
+
+  @ApiOperation({ summary: '유저 스킬 추가하기' })
+  @ApiOkResponse({ description: '성공' })
+  @UseGuards(JwtAuthGuard)
+  @Post('me/skills')
+  addUserSkill(@CurrentUser() user, @Body() body: UpdateSkillDto) {
+    return this.usersService.addUserSkill(user, body);
+  }
+
+  @ApiOperation({ summary: '유저 스킬 삭제하기' })
+  @ApiOkResponse({ description: '성공' })
+  @UseGuards(JwtAuthGuard)
+  @Delete('me/skills')
+  deleteUserSkill(@CurrentUser() user, @Body() body: UpdateSkillDto) {
+    return this.usersService.deleteUserSkill(user, body);
   }
 
   @ApiOperation({ summary: '회원 탈퇴하기' })

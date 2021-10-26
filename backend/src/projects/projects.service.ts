@@ -4,13 +4,15 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Project } from './projects.entity';
+import { Skill } from 'src/entities/skills.entity';
+import { getConnection, Repository } from 'typeorm';
+import { Project } from '../entities/projects.entity';
 
 @Injectable()
 export class ProjectsService {
   constructor(
     @InjectRepository(Project) private projectsRepository: Repository<Project>,
+    @InjectRepository(Skill) private skillsRepository: Repository<Skill>,
   ) {}
 
   async getAllProjects() {
@@ -82,6 +84,58 @@ export class ProjectsService {
       await this.projectsRepository.update(id, { ...data });
       return await this.projectsRepository.find({ where: { id } });
     }
+  }
+
+  async addProjectSkill(user, id, data) {
+    const project = await this.projectsRepository.findOne({
+      select: ['ownerId'],
+      where: { id, deletedAt: null },
+    });
+
+    if (!project) {
+      throw new NotFoundException('👻 존재하지 않는 프로젝트에요 🌫');
+    } else if (user.id !== project.ownerId) {
+      throw new ForbiddenException('👻 프로젝트 등록자만 변경할 수 있어요 🌫');
+    }
+
+    const { skillName } = data;
+    const skill = await this.skillsRepository.findOne({
+      where: { name: skillName },
+    });
+    const skillId = skill.id;
+
+    // 조인 테이블에 추가
+    await getConnection()
+      .createQueryBuilder()
+      .relation(Project, 'skills')
+      .of(id)
+      .add(skillId);
+  }
+
+  async deleteProjectSkill(user, id, data) {
+    const project = await this.projectsRepository.findOne({
+      select: ['ownerId'],
+      where: { id, deletedAt: null },
+    });
+
+    if (!project) {
+      throw new NotFoundException('👻 존재하지 않는 프로젝트에요 🌫');
+    } else if (user.id !== project.ownerId) {
+      throw new ForbiddenException('👻 프로젝트 등록자만 변경할 수 있어요 🌫');
+    }
+
+    const { skillName } = data;
+    const skill = await this.skillsRepository.findOne({
+      where: { name: skillName },
+    });
+    const skillId = skill.id;
+
+    // 조인 테이블에서 삭제
+    await getConnection()
+      .createQueryBuilder()
+      .relation(Project, 'skills')
+      .of(id)
+      .remove(skillId);
   }
 
   async deleteProject(user, id) {
