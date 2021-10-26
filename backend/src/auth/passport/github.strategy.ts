@@ -8,7 +8,7 @@ export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
     super({
       clientID: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_SECRET,
-      redirectUri: `http://localhost:${process.env.PORT_FE}/auth/github`,
+      redirectUri: `http://localhost:${process.env.PORT_FE}/auth`,
     });
   }
 

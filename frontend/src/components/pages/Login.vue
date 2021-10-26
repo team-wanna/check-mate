@@ -4,9 +4,10 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { useStore } from 'vuex';
-import { loginGoogleAPI } from '@/api/modules/auth';
+import { loginAPI } from '@/api/modules/auth';
 import router from '@/router';
 import api from '@/api';
+import { SocialType } from '@/utils/define';
 
 export default defineComponent({
   name: 'GoogleLogin',
@@ -18,7 +19,10 @@ export default defineComponent({
       if (code) {
         try {
           const store = useStore();
-          const { data } = await loginGoogleAPI(code);
+          const loginType = window.sessionStorage.getItem(
+            'loginType',
+          ) as SocialType;
+          const { data } = await loginAPI(loginType, code);
           const { token, name, profileImageUrl } = data.data[0];
 
           store.commit('setToken', token);

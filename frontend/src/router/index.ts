@@ -8,12 +8,10 @@ const routes: Array<RouteRecordRaw> = [
     component: Home,
   },
   {
-    path: '/auth/google',
+    path: '/auth',
     name: 'GoogleLogin',
     component: () =>
-      import(
-        /* webpackChunkName: "googleLogin" */ '@/components/pages/GoogleLogin.vue'
-      ),
+      import(/* webpackChunkName: "Login" */ '@/components/pages/Login.vue'),
   },
 ];
 
