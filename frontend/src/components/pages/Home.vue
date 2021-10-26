@@ -16,12 +16,9 @@ export default defineComponent({
     const store = useStore();
     const userState = computed(() => store.getters['user/getUserState']);
     const isShowSignIn = ref(false);
-    const token = window.localStorage.getItem('token');
 
     if (userState.value === 'signUp') {
       isShowSignIn.value = true;
-    } else if (token) {
-      store.commit('user/setUserState', 'loggedIn');
     }
 
     return {

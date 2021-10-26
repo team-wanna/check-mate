@@ -11,9 +11,12 @@
           v-model="nickname"
         />
       </div>
+      <p>{{ errorMsg }}</p>
     </template>
     <template #footer>
-      <button @click="clickSignIn">가입 완료</button>
+      <div class="footer-container">
+        <span class="sign-in-btn" @click="clickSignIn">가입 완료</span>
+      </div>
     </template>
   </base-modal>
 </template>
@@ -34,18 +37,24 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     const nickname = ref('');
+    const errorMsg = ref('');
     const isShow = computed({
       get: () => props.visible,
-      set: (val) => emit('update-visible', val),
+      set: (val) => emit('update:visible', val),
     });
+
     const singIn = async () => {
       try {
+        if (!nickname.value) {
+          errorMsg.value = '닉네임을 입력하세요!😤';
+          return;
+        }
         const data = await editProfileAPI({ name: nickname.value });
         console.log('data: ', data);
-      } catch (error) {
-        console.error(error);
-      } finally {
         isShow.value = false;
+      } catch (error) {
+        errorMsg.value = '중복된 닉네임입니다😥';
+        console.error(error);
       }
     };
     const clickSignIn = () => {
@@ -54,6 +63,7 @@ export default defineComponent({
 
     return {
       nickname,
+      errorMsg,
       isShow,
       clickSignIn,
     };
@@ -73,8 +83,18 @@ export default defineComponent({
 .nickname-container {
   display: flex;
   font-size: $font-size-medium;
+  margin-bottom: 10px;
   .nickname-container__label {
     margin-right: 10px;
+  }
+}
+.footer-container {
+  display: flex;
+  justify-content: center;
+  .sign-in-btn {
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: 3px solid $primary;
   }
 }
 </style>

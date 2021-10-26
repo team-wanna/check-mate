@@ -26,7 +26,7 @@ export default defineComponent({
           const { token, name, profileImageUrl } = data.data[0];
 
           store.commit('setToken', token);
-          window.localStorage.setItem('token', token);
+          window.sessionStorage.setItem('token', token);
 
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
