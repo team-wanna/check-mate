@@ -4,6 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Skill } from 'src/entities/skills.entity';
 import { getConnection, Repository } from 'typeorm';
 import { Project } from '../entities/projects.entity';
 
@@ -11,6 +12,7 @@ import { Project } from '../entities/projects.entity';
 export class ProjectsService {
   constructor(
     @InjectRepository(Project) private projectsRepository: Repository<Project>,
+    @InjectRepository(Skill) private skillsRepository: Repository<Skill>,
   ) {}
 
   async getAllProjects() {
@@ -84,8 +86,7 @@ export class ProjectsService {
     }
   }
 
-  async addProjectSkill(user, projectId, data) {
-    const { id } = user;
+  async addProjectSkill(user, id, data) {
     const project = await this.projectsRepository.findOne({
       select: ['ownerId'],
       where: { id, deletedAt: null },
@@ -97,18 +98,21 @@ export class ProjectsService {
       throw new ForbiddenException('👻 프로젝트 등록자만 변경할 수 있어요 🌫');
     }
 
-    const { skillId } = data;
+    const { skillName } = data;
+    const skill = await this.skillsRepository.findOne({
+      where: { name: skillName },
+    });
+    const skillId = skill.id;
 
     // 조인 테이블에 추가
     await getConnection()
       .createQueryBuilder()
       .relation(Project, 'skills')
-      .of(projectId)
+      .of(id)
       .add(skillId);
   }
 
-  async deleteProjectSkill(user, projectId, data) {
-    const { id } = user;
+  async deleteProjectSkill(user, id, data) {
     const project = await this.projectsRepository.findOne({
       select: ['ownerId'],
       where: { id, deletedAt: null },
@@ -120,13 +124,17 @@ export class ProjectsService {
       throw new ForbiddenException('👻 프로젝트 등록자만 변경할 수 있어요 🌫');
     }
 
-    const { skillId } = data;
+    const { skillName } = data;
+    const skill = await this.skillsRepository.findOne({
+      where: { name: skillName },
+    });
+    const skillId = skill.id;
 
-    // 조인 테이블에 삭제
+    // 조인 테이블에서 삭제
     await getConnection()
       .createQueryBuilder()
       .relation(Project, 'skills')
-      .of(projectId)
+      .of(id)
       .remove(skillId);
   }
 

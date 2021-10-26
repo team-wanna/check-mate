@@ -4,10 +4,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersController } from './users.controller';
 import { User } from '../entities/users.entity';
 import { UsersService } from './users.service';
+import { Skill } from 'src/entities/skills.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, Skill]),
     MulterModule.register({
       dest: './upload',
     }),

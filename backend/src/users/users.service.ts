@@ -4,13 +4,15 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { getConnection, getRepository, Repository } from 'typeorm';
+import { Skill } from 'src/entities/skills.entity';
+import { getConnection, Repository } from 'typeorm';
 import { User } from '../entities/users.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private usersRepository: Repository<User>,
+    @InjectRepository(Skill) private skillsRepository: Repository<Skill>,
   ) {}
 
   getCurrentUser(user) {
@@ -48,26 +50,34 @@ export class UsersService {
   }
 
   async addUserSkill(user, data) {
-    const userId = user.id;
-    const { skillId } = data;
+    const { id } = user;
+    const { skillName } = data;
+    const skill = await this.skillsRepository.findOne({
+      where: { name: skillName },
+    });
+    const skillId = skill.id;
 
     // 조인 테이블에 추가
     await getConnection()
       .createQueryBuilder()
       .relation(User, 'skills')
-      .of(userId)
+      .of(id)
       .add(skillId);
   }
 
   async deleteUserSkill(user, data) {
-    const userId = user.id;
-    const { skillId } = data;
+    const { id } = user;
+    const { skillName } = data;
+    const skill = await this.skillsRepository.findOne({
+      where: { name: skillName },
+    });
+    const skillId = skill.id;
 
     // 조인 테이블에서 삭제
     await getConnection()
       .createQueryBuilder()
       .relation(User, 'skills')
-      .of(userId)
+      .of(id)
       .remove(skillId);
   }
 
