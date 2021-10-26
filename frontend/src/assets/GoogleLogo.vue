@@ -1,5 +1,11 @@
 <template>
-  <svg width="100" height="100" fill="none" viewBox="0 0 20 20">
+  <svg
+    class="google-logo"
+    width="100"
+    height="100"
+    fill="none"
+    viewBox="0 0 20 20"
+  >
     <path
       fill="#4285F4"
       d="M19.99 10.187c0-.82-.069-1.417-.216-2.037H10.2v3.698h5.62c-.113.92-.725 2.303-2.084 3.233l-.02.124 3.028 2.292.21.02c1.926-1.738 3.037-4.296 3.037-7.33z"
@@ -18,3 +24,16 @@
     ></path>
   </svg>
 </template>
+<script lang="ts">
+import { defineComponent } from 'vue';
+
+export default defineComponent({
+  name: 'GoogleLogo',
+});
+</script>
+<style lang="scss">
+.google-logo {
+  padding: 20px;
+  box-shadow: 0 5px 25px rgb(0 0 0 / 15%);
+}
+</style>

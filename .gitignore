@@ -1,5 +1,5 @@
 # Custom
-/backend/.env
+.env
 /backend/src/auth/constants.ts
 
 # OS

@@ -1,5 +1,9 @@
 <template>
-  <google-logo v-if="$props.type === 'google'" class="logo logo--google" />
+  <google-logo
+    class="logo logo--google"
+    v-if="$props.type === 'google'"
+    @click="clickLoginBtn"
+  />
   <fa
     v-else
     :icon="['fab', iconName]"
@@ -10,25 +14,26 @@
 </template>
 
 <script lang="ts">
-import { SocialType } from "@/utils/define";
-import { defineComponent, PropType } from "vue";
-import GoogleLogo from "@/assets/GoogleLogo.vue";
+import { defineComponent, PropType } from 'vue';
+import { SocialType } from '@/utils/define';
+import GoogleLogo from '@/assets/GoogleLogo.vue';
 
 export default defineComponent({
-  name: "SocialLoginButton",
+  name: 'SocialLoginButton',
   components: { GoogleLogo },
   props: {
     type: {
       type: String as PropType<SocialType>,
-      default: "",
+      default: '',
     },
   },
   setup(props) {
     const iconName =
-      props.type === "google" ? "google" : `${props.type}-square`;
+      props.type === 'google' ? 'google' : `${props.type}-square`;
 
     const clickLoginBtn = () => {
-      window.location.href = `http://localhost:8080/api/auth/${props.type}`;
+      window.sessionStorage.setItem('loginType', props.type);
+      window.location.href = `${process.env.VUE_APP_BACKEND_URL}/api/auth/${props.type}`;
     };
 
     return {
@@ -46,8 +51,6 @@ export default defineComponent({
   border-radius: 10px;
   &--google {
     margin: 10px 20px;
-    padding: 20px;
-    box-shadow: 0 5px 25px rgb(0 0 0 / 15%);
   }
   &--facebook {
     color: #4267b2;
