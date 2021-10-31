@@ -17,7 +17,6 @@ export class ProjectsService {
 
   async getAllProjects() {
     const projects = await this.projectsRepository.find({
-      // TO-DO: skills도 포함하여 리턴하도록
       // TO-DO: 필터링 적용
       select: [
         'id',
@@ -34,17 +33,20 @@ export class ProjectsService {
       order: { applicantCount: 'DESC' },
     });
 
-    console.log(projects);
-
-    return projects;
+    return await Promise.all(
+      projects.map(async (project) => {
+        return {
+          ...project,
+          skills: await this.getProjectSkills(project.id),
+        };
+      }),
+    );
   }
 
   async getProject(id) {
     const project = await this.projectsRepository.find({
       where: { id, deletedAt: null },
     });
-
-    console.log(project);
 
     if (project.length === 0) {
       throw new NotFoundException('👻 존재하지 않는 프로젝트에요 🌫');

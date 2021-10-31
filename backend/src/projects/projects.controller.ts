@@ -20,6 +20,7 @@ import { ApiResponseDto } from 'src/common/decorators/api-response-dto.decorator
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { multerOptions } from 'src/common/utils/multer.options';
 import { CreateProjectDto } from './dto/create-project.dto';
+import { ProjectThumbnailDto } from './dto/project-thumbnail.dto';
 import { ProjectDto } from './dto/project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { ProjectsService } from './projects.service';
@@ -29,7 +30,7 @@ export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) {}
 
   @ApiOperation({ summary: '모든 프로젝트 가져오기' })
-  @ApiResponseDto(ProjectDto)
+  @ApiResponseDto(ProjectThumbnailDto)
   @Get()
   getAllProjects() {
     return this.projectsService.getAllProjects();
