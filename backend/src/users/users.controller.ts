@@ -11,11 +11,11 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
+import { UpdateSkillDto } from 'skills/dto/update-skill.dto';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { ApiResponseDto } from 'src/common/decorators/api-response-dto.decorator';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { multerOptions } from 'src/common/utils/multer.options';
-import { UpdateSkillDto } from 'src/dto/update-skill.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserDto } from './dto/user.dto';
 import { UsersService } from './users.service';
