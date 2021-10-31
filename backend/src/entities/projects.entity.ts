@@ -85,7 +85,7 @@ export class Project extends BaseEntity {
 
   @ApiProperty({
     description: '프로젝트 마감 여부',
-    example: 'N',
+    example: false,
   })
   @IsNotEmpty()
   @IsBoolean()
@@ -128,6 +128,10 @@ export class Project extends BaseEntity {
     name: 'project_skill',
     joinColumn: { name: 'project_id', referencedColumnName: 'id' },
     inverseJoinColumn: { name: 'skill_id', referencedColumnName: 'id' },
+  })
+  @ApiProperty({
+    description: '스킬',
+    example: '[]',
   })
   skills: Skill[];
 }

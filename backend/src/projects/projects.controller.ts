@@ -13,12 +13,14 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
+import { SkillDto } from 'skills/dto/skill.dto';
+import { UpdateSkillDto } from 'skills/dto/update-skill.dto';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { ApiResponseDto } from 'src/common/decorators/api-response-dto.decorator';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { multerOptions } from 'src/common/utils/multer.options';
-import { UpdateSkillDto } from 'src/dto/update-skill.dto';
 import { CreateProjectDto } from './dto/create-project.dto';
+import { ProjectThumbnailDto } from './dto/project-thumbnail.dto';
 import { ProjectDto } from './dto/project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { ProjectsService } from './projects.service';
@@ -28,7 +30,7 @@ export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) {}
 
   @ApiOperation({ summary: '모든 프로젝트 가져오기' })
-  @ApiResponseDto(ProjectDto)
+  @ApiResponseDto(ProjectThumbnailDto)
   @Get()
   getAllProjects() {
     return this.projectsService.getAllProjects();
@@ -61,8 +63,15 @@ export class ProjectsController {
     return this.projectsService.updateProject(user, id, body);
   }
 
+  @ApiOperation({ summary: '프로젝트 스킬 가져오기' })
+  @ApiResponseDto(SkillDto)
+  @Get(':id/skills')
+  getProjectSkills(@Param('id', ParseIntPipe) id: number) {
+    return this.projectsService.getProjectSkills(id);
+  }
+
   @ApiOperation({ summary: '프로젝트 스킬 추가하기' })
-  @ApiOkResponse({ description: '성공' })
+  @ApiResponseDto(SkillDto)
   @UseGuards(JwtAuthGuard)
   @Post(':id/skills')
   addUserSkill(
@@ -74,7 +83,7 @@ export class ProjectsController {
   }
 
   @ApiOperation({ summary: '프로젝트 스킬 삭제하기' })
-  @ApiOkResponse({ description: '성공' })
+  @ApiResponseDto(SkillDto)
   @UseGuards(JwtAuthGuard)
   @Delete(':id/skills')
   deleteUserSkill(

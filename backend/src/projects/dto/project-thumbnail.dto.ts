@@ -1,14 +1,13 @@
 import { PickType } from '@nestjs/swagger';
-import { Project } from '../../entities/projects.entity';
+import { Project } from 'src/entities/projects.entity';
 
-export class ProjectDto extends PickType(Project, [
+export class ProjectThumbnailDto extends PickType(Project, [
   'id',
-  'ownerId',
   'title',
   'logoImageUrl',
   'intro',
-  'description',
   'location',
+  'skills',
   'isClosed',
   'createdAt',
   'updatedAt',
