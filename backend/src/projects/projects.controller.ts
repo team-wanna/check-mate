@@ -13,6 +13,7 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
+import { SkillDto } from 'skills/dto/skill.dto';
 import { UpdateSkillDto } from 'skills/dto/update-skill.dto';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { ApiResponseDto } from 'src/common/decorators/api-response-dto.decorator';
@@ -61,8 +62,15 @@ export class ProjectsController {
     return this.projectsService.updateProject(user, id, body);
   }
 
+  @ApiOperation({ summary: '프로젝트 스킬 가져오기' })
+  @ApiResponseDto(SkillDto)
+  @Get(':id/skills')
+  getProjectSkills(@Param('id', ParseIntPipe) id: number) {
+    return this.projectsService.getProjectSkills(id);
+  }
+
   @ApiOperation({ summary: '프로젝트 스킬 추가하기' })
-  @ApiOkResponse({ description: '성공' })
+  @ApiResponseDto(SkillDto)
   @UseGuards(JwtAuthGuard)
   @Post(':id/skills')
   addUserSkill(
@@ -74,7 +82,7 @@ export class ProjectsController {
   }
 
   @ApiOperation({ summary: '프로젝트 스킬 삭제하기' })
-  @ApiOkResponse({ description: '성공' })
+  @ApiResponseDto(SkillDto)
   @UseGuards(JwtAuthGuard)
   @Delete(':id/skills')
   deleteUserSkill(

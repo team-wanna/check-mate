@@ -86,6 +86,16 @@ export class ProjectsService {
     }
   }
 
+  async getProjectSkills(id) {
+    const skills = await getConnection()
+      .createQueryBuilder()
+      .relation(Project, 'skills')
+      .of(id)
+      .loadMany();
+
+    return skills;
+  }
+
   async addProjectSkill(user, id, data) {
     const project = await this.projectsRepository.findOne({
       select: ['ownerId'],
@@ -110,6 +120,8 @@ export class ProjectsService {
       .relation(Project, 'skills')
       .of(id)
       .add(skillId);
+
+    return this.getProjectSkills(id);
   }
 
   async deleteProjectSkill(user, id, data) {
@@ -136,6 +148,8 @@ export class ProjectsService {
       .relation(Project, 'skills')
       .of(id)
       .remove(skillId);
+
+    return this.getProjectSkills(id);
   }
 
   async deleteProject(user, id) {

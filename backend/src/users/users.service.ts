@@ -49,6 +49,16 @@ export class UsersService {
     return await this.usersRepository.find({ where: { id } });
   }
 
+  async getUserSkills(user) {
+    const skills = await getConnection()
+      .createQueryBuilder()
+      .relation(User, 'skills')
+      .of(user.id)
+      .loadMany();
+
+    return skills;
+  }
+
   async addUserSkill(user, data) {
     const { id } = user;
     const { skillName } = data;
@@ -63,6 +73,8 @@ export class UsersService {
       .relation(User, 'skills')
       .of(id)
       .add(skillId);
+
+    return this.getUserSkills(user);
   }
 
   async deleteUserSkill(user, data) {
@@ -79,6 +91,8 @@ export class UsersService {
       .relation(User, 'skills')
       .of(id)
       .remove(skillId);
+
+    return this.getUserSkills(user);
   }
 
   async deleteUser(user) {

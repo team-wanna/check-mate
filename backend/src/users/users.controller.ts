@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
+import { SkillDto } from 'skills/dto/skill.dto';
 import { UpdateSkillDto } from 'skills/dto/update-skill.dto';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { ApiResponseDto } from 'src/common/decorators/api-response-dto.decorator';
@@ -40,8 +41,15 @@ export class UsersController {
     return this.usersService.updateUser(user, body);
   }
 
+  @ApiOperation({ summary: '유저 스킬 가져오기' })
+  @ApiResponseDto(SkillDto)
+  @Get('me/skills')
+  getUserSkills(@CurrentUser() user) {
+    return this.usersService.getUserSkills(user);
+  }
+
   @ApiOperation({ summary: '유저 스킬 추가하기' })
-  @ApiOkResponse({ description: '성공' })
+  @ApiResponseDto(SkillDto)
   @UseGuards(JwtAuthGuard)
   @Post('me/skills')
   addUserSkill(@CurrentUser() user, @Body() body: UpdateSkillDto) {
@@ -49,7 +57,7 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: '유저 스킬 삭제하기' })
-  @ApiOkResponse({ description: '성공' })
+  @ApiResponseDto(SkillDto)
   @UseGuards(JwtAuthGuard)
   @Delete('me/skills')
   deleteUserSkill(@CurrentUser() user, @Body() body: UpdateSkillDto) {

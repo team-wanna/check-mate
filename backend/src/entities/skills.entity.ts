@@ -20,6 +20,7 @@ export class Skill extends BaseEntity {
 
   @ApiProperty({
     description: '스킬 이름',
+    example: 'TypeScript',
   })
   @Column()
   name: string;
