@@ -6,36 +6,20 @@
         <a>프로젝트</a>
       </section>
       <section class="item-container__item-right">
-        <div class="menu-info" v-if="userState === 'loggedIn'">
-          <fa class="alarm-icon" :icon="['far', 'bell']" />
-          <fa class="profile-icon" :icon="['far', 'user-circle']" />
-        </div>
-        <a class="menu-login" v-else @click="clickLoginBtn">로그인</a>
+        <login-button />
       </section>
     </div>
   </nav>
-  <login-modal v-model:visible="isShowLoginModal" />
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from 'vue';
-import { useStore } from 'vuex';
-import LoginModal from '@/components/pages/LoginModal.vue';
+import { defineComponent } from 'vue';
+import LoginButton from '@/components/UI/atoms/LoginButton.vue';
 
 export default defineComponent({
   name: 'NavigationBar',
-  components: { LoginModal },
+  components: { LoginButton },
   props: {},
-  setup() {
-    const store = useStore();
-    const userState = computed(() => store.getters['user/getUserState']);
-    const isShowLoginModal = ref(false);
-    const clickLoginBtn = () => {
-      isShowLoginModal.value = true;
-    };
-
-    return { userState, isShowLoginModal, clickLoginBtn };
-  },
 });
 </script>
 
@@ -55,16 +39,6 @@ export default defineComponent({
   align-items: center;
   a {
     font-size: 36px;
-  }
-  &__item-right {
-    display: flex;
-    margin-right: 20px;
-    .menu-info {
-      font-size: 36px;
-      .alarm-icon {
-        margin-right: 10px;
-      }
-    }
   }
 }
 
