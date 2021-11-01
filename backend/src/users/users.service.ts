@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Skill } from 'src/entities/skills.entity';
@@ -49,11 +50,11 @@ export class UsersService {
     return await this.usersRepository.find({ where: { id } });
   }
 
-  async getUserSkills(user) {
+  async getUserSkills(id) {
     const skills = await getConnection()
       .createQueryBuilder()
       .relation(User, 'skills')
-      .of(user.id)
+      .of(id)
       .loadMany();
 
     return skills;
@@ -74,7 +75,7 @@ export class UsersService {
       .of(id)
       .add(skillId);
 
-    return this.getUserSkills(user);
+    return this.getUserSkills(id);
   }
 
   async deleteUserSkill(user, data) {
@@ -92,7 +93,7 @@ export class UsersService {
       .of(id)
       .remove(skillId);
 
-    return this.getUserSkills(user);
+    return this.getUserSkills(id);
   }
 
   async deleteUser(user) {
@@ -110,5 +111,25 @@ export class UsersService {
     });
 
     return await this.usersRepository.find({ where: { id } });
+  }
+
+  async getAnotherUser(id) {
+    const user = await this.usersRepository.findOne({
+      select: [
+        'id',
+        'name',
+        'profileImageUrl',
+        'intro',
+        'createdAt',
+        'updatedAt',
+      ],
+      where: { id, deletedAt: null },
+    });
+
+    if (!user) {
+      throw new NotFoundException('👻 존재하지 않는 회원이에요 🌫');
+    } else {
+      return [{ ...user, skills: await this.getUserSkills(id) }];
+    }
   }
 }

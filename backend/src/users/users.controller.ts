@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  Param,
+  ParseIntPipe,
   Patch,
   Post,
   UploadedFile,
@@ -17,6 +19,7 @@ import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { ApiResponseDto } from 'src/common/decorators/api-response-dto.decorator';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { multerOptions } from 'src/common/utils/multer.options';
+import { AnotherUserDto } from './dto/another-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserDto } from './dto/user.dto';
 import { UsersService } from './users.service';
@@ -45,7 +48,7 @@ export class UsersController {
   @ApiResponseDto(SkillDto)
   @Get('me/skills')
   getUserSkills(@CurrentUser() user) {
-    return this.usersService.getUserSkills(user);
+    return this.usersService.getUserSkills(user.id);
   }
 
   @ApiOperation({ summary: '유저 스킬 추가하기' })
@@ -82,5 +85,12 @@ export class UsersController {
     @UploadedFile() profileImageFile: Express.Multer.File,
   ) {
     return this.usersService.uploadProfileImage(user, profileImageFile);
+  }
+
+  @ApiOperation({ summary: '다른 유저 정보 조회하기' })
+  @ApiResponseDto(AnotherUserDto)
+  @Get(':id')
+  getAnotherUser(@Param('id', ParseIntPipe) id: number) {
+    return this.usersService.getAnotherUser(id);
   }
 }
