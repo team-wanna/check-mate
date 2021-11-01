@@ -115,6 +115,14 @@ export class UsersService {
 
   async getAnotherUser(id) {
     const user = await this.usersRepository.findOne({
+      select: [
+        'id',
+        'name',
+        'profileImageUrl',
+        'intro',
+        'createdAt',
+        'updatedAt',
+      ],
       where: { id, deletedAt: null },
     });
 

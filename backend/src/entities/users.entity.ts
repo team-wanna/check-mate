@@ -100,5 +100,9 @@ export class User extends BaseEntity {
     joinColumn: { name: 'user_id', referencedColumnName: 'id' },
     inverseJoinColumn: { name: 'skill_id', referencedColumnName: 'id' },
   })
+  @ApiProperty({
+    description: '스킬',
+    example: '[{"id": 12, "name": "TypeScript"}]',
+  })
   skills: Skill[];
 }

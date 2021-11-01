@@ -19,6 +19,7 @@ import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { ApiResponseDto } from 'src/common/decorators/api-response-dto.decorator';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { multerOptions } from 'src/common/utils/multer.options';
+import { AnotherUserDto } from './dto/another-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserDto } from './dto/user.dto';
 import { UsersService } from './users.service';
@@ -87,7 +88,7 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: '다른 유저 정보 조회하기' })
-  @ApiResponseDto(UserDto)
+  @ApiResponseDto(AnotherUserDto)
   @Get(':id')
   getAnotherUser(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.getAnotherUser(id);
