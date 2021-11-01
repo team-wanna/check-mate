@@ -36,7 +36,7 @@ export class ProjectsController {
     return this.projectsService.getAllProjects();
   }
 
-  @ApiOperation({ summary: '프로젝트 가져오기' })
+  @ApiOperation({ summary: '프로젝트 조회하기' })
   @ApiResponseDto(ProjectDto)
   @Get(':id')
   getProject(@Param('id', ParseIntPipe) id: number) {
