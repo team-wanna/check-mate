@@ -13,8 +13,8 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
-import { SkillDto } from 'skills/dto/skill.dto';
-import { UpdateSkillDto } from 'skills/dto/update-skill.dto';
+import { SkillDto } from 'src/skills/dto/skill.dto';
+import { UpdateSkillDto } from 'src/skills/dto/update-skill.dto';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { ApiResponseDto } from 'src/common/decorators/api-response-dto.decorator';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
