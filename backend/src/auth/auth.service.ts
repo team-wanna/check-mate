@@ -38,7 +38,7 @@ export class AuthService {
 
     const user = await this.usersRepository.findOne({
       select: ['id', 'name', 'profileImageUrl'],
-      where: { subId, deletedAt: null },
+      where: { provider, subId: encryptedSubId, deletedAt: null },
     });
     const payload: Payload = { subId, sub: user.id };
     return [
