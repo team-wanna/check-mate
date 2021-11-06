@@ -50,6 +50,12 @@ export class UsersService {
     return await this.usersRepository.find({ where: { id } });
   }
 
+  async deleteUser(user) {
+    const { id } = user;
+    await this.usersRepository.softDelete(id);
+    return;
+  }
+
   async getUserSkills(id) {
     const skills = await getConnection()
       .createQueryBuilder()
@@ -94,12 +100,6 @@ export class UsersService {
       .remove(skillId);
 
     return this.getUserSkills(id);
-  }
-
-  async deleteUser(user) {
-    const { id } = user;
-    await this.usersRepository.softDelete(id);
-    return;
   }
 
   async uploadProfileImage(user, profileImageFile: Express.Multer.File) {

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 import {
   BaseEntity,
   Column,
@@ -64,6 +64,14 @@ export class User extends BaseEntity {
   @IsString()
   @Column({ default: null })
   intro: string | null;
+
+  @ApiProperty({
+    description: '이메일',
+    example: 'team.wanna@gmail.com',
+  })
+  @IsEmail()
+  @Column({ default: null })
+  email: string | null;
 
   @ApiProperty({
     description: '가입일',
