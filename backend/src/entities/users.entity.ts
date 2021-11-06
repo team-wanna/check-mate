@@ -67,7 +67,7 @@ export class User extends BaseEntity {
 
   @ApiProperty({
     description: '이메일',
-    example: 'team.wanna@gmail.com',
+    example: 'team.wanna.0722@gmail.com',
   })
   @IsEmail()
   @Column({ default: null })

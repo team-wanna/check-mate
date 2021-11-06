@@ -23,6 +23,7 @@ export class UsersService {
   async updateUser(user, data) {
     const { id } = user;
 
+    // 유저 이름 정규 표현식, 중복 검사
     if (data.name) {
       const regex = /[^a-zA-Z0-9ㄱ-ㅎㅏ-ㅣ가-힣]/;
       if (regex.test(data.name) || data.name === '') {
@@ -33,12 +34,23 @@ export class UsersService {
         select: ['id', 'name'],
         where: { name: data.name },
       });
-      if (exist) {
-        if (exist.id !== id) {
-          throw new ConflictException(
-            '👻 이미 사용 중인 이름이에요! 다른 이름을 입력해 주세요 🌫',
-          );
-        }
+      if (exist && exist.id !== id) {
+        throw new ConflictException(
+          '👻 이미 사용 중인 이름이에요! 다른 이름을 입력해 주세요 🌫',
+        );
+      }
+    }
+
+    // 이메일 중복 검사
+    if (data.email) {
+      const exist = await this.usersRepository.findOne({
+        select: ['id', 'email'],
+        where: { email: data.email },
+      });
+      if (exist && exist.id !== id) {
+        throw new ConflictException(
+          '👻 이미 사용 중인 이메일이에요! 다른 이메일을 입력해 주세요 🌫',
+        );
       }
     }
 
