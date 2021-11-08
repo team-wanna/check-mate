@@ -4,12 +4,7 @@
       <fa class="icon alarm-icon" :icon="['far', 'bell']" />
     </div>
     <div class="profile-container">
-      <button
-        ref="profileBtn"
-        class="profile-btn"
-        @click="clickProfile"
-        @blur="blurProfile"
-      >
+      <button @click="clickProfile" @blur="blurProfile">
         <img
           v-if="profileImage"
           class="profile-icon--custom"
@@ -23,7 +18,13 @@
       </button>
 
       <div class="profile-popup" v-show="isShowProfilePopup">
-        <p class="profile-popup-item">내 정보</p>
+        <p
+          @click="clickMyProfile"
+          @mousedown.prevent
+          class="profile-popup-item"
+        >
+          내 정보
+        </p>
         <p
           @click="clickLogoutBtn"
           @mousedown.prevent
@@ -34,7 +35,7 @@
       </div>
     </div>
   </div>
-  <a class="icon" v-else @click="clickLoginBtn">로그인</a>
+  <a class="icon btn--primary" v-else @click="clickLoginBtn">로그인</a>
   <login-modal v-model:visible="isShowLoginModal" />
 </template>
 
@@ -69,6 +70,9 @@ export default defineComponent({
       store.commit('user/setUserState', 'loggedOut');
       router.push('/');
     };
+    const clickMyProfile = () => {
+      router.push('/profile');
+    };
 
     return {
       userState,
@@ -79,15 +83,27 @@ export default defineComponent({
       clickProfile,
       clickLoginBtn,
       clickLogoutBtn,
+      clickMyProfile,
     };
   },
 });
 </script>
 
 <style scoped lang="scss">
+.btn--primary {
+  padding: 10px;
+  border-radius: 10px;
+  background-color: $--color-primary;
+  color: #ffffff;
+
+  transition: background-color 0.5s ease;
+}
+.btn--primary:hover {
+  background-color: $--color-primary-dark;
+}
 .icon {
   cursor: pointer;
-  font-size: $font-size-medium;
+  font-size: $--font-size-medium;
 }
 .login-button-container {
   display: flex;
@@ -97,7 +113,7 @@ export default defineComponent({
     margin-right: 10px;
   }
   .profile-icon--common {
-    font-size: $font-size-large;
+    font-size: $--font-size-large;
   }
   .profile-icon--custom {
     width: 50px;
@@ -108,7 +124,7 @@ export default defineComponent({
 .profile-popup {
   position: absolute;
   width: 200px;
-  border: 1px solid $border;
+  border: 1px solid $--color-border;
   border-radius: 5px;
   background-color: #ffffff;
   &-item {
@@ -118,7 +134,7 @@ export default defineComponent({
     transition: ease-in background-color;
   }
   &-item:hover {
-    background-color: $primary;
+    background-color: $--color-primary;
   }
 }
 </style>

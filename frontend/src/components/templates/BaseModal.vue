@@ -95,6 +95,6 @@ export default defineComponent({
   margin: 4px;
 }
 .icon--large {
-  font-size: $font-size-large;
+  font-size: $--font-size-large;
 }
 </style>

@@ -50,7 +50,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .title {
-  font-size: $font-size-large;
+  font-size: $--font-size-large;
 }
 .login-btn-container {
   margin-top: 60px;
@@ -63,7 +63,7 @@ export default defineComponent({
     height: 200px;
     .content-title {
       margin: 8px 0;
-      font-size: $font-size-medium;
+      font-size: $--font-size-medium;
     }
   }
 }

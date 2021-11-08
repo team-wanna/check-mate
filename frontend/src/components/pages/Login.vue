@@ -25,7 +25,6 @@ export default defineComponent({
           const { data } = await loginAPI(loginType, code);
           const { token, name, profileImageUrl } = data.data[0];
 
-          store.commit('setToken', token);
           window.sessionStorage.setItem('token', token);
 
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment

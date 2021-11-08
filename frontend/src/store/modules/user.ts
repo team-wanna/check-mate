@@ -8,6 +8,7 @@ interface State {
   profileImageUrl: string;
   userState: UserState;
 }
+
 const user: Module<State, RootState> = {
   namespaced: true,
   state: {
@@ -33,4 +34,4 @@ const user: Module<State, RootState> = {
   },
 };
 
-export default { user };
+export default user;

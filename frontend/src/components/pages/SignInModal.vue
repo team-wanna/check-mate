@@ -73,16 +73,16 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .title {
-  font-size: $font-size-large;
+  font-size: $--font-size-large;
   margin-bottom: 20px;
 }
 .sub-title {
-  font-size: $font-size-medium;
+  font-size: $--font-size-medium;
   margin-bottom: 15px;
 }
 .nickname-container {
   display: flex;
-  font-size: $font-size-medium;
+  font-size: $--font-size-medium;
   margin-bottom: 10px;
   .nickname-container__label {
     margin-right: 10px;
@@ -94,7 +94,7 @@ export default defineComponent({
   .sign-in-btn {
     padding: 5px 10px;
     border-radius: 5px;
-    border: 3px solid $primary;
+    border: 3px solid $--color-primary;
   }
 }
 </style>
