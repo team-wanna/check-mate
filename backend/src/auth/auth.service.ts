@@ -21,7 +21,7 @@ export class AuthService {
     const { provider, subId, profileImageUrl } = req.user;
 
     const encryptedSubId = crypto
-      .createHmac('sha256', process.env.CRYPT_SECRET)
+      .createHmac('sha256', subId)
       .update('json')
       .digest('base64');
 
