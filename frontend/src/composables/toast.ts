@@ -8,11 +8,11 @@ const useToast = () => {
     () => store.getters['toast/getToasts'],
   );
 
-  const triggerToast = async (message: string) => {
+  const triggerToast = async (message: string, type: 'success' | 'danger') => {
     const toast: Toast = {
       id: Date.now(),
       message,
-      type: 'success',
+      type,
     };
     await store.dispatch('toast/triggerToast', toast);
   };

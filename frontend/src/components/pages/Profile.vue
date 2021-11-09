@@ -15,9 +15,17 @@
               <label class="profile-picture-label" for="picture">
                 📷사진 바꾸기
               </label>
-              <input type="file" id="picture" name="picture" />
+              <input
+                type="file"
+                id="picture"
+                name="picture"
+                accept="image/*"
+                @change="loadFile"
+              />
             </form>
-            <span class="btn-save">저장하기</span>
+            <span class="btn-save" @click="clickProfileImageSaveBtn"
+              >저장하기</span
+            >
           </div>
         </section>
         <section class="profile-container__content">
@@ -25,16 +33,20 @@
           <div class="profile-item-box profile-item--info">
             <div class="info-item-box">
               <label class="info-title">📛이름</label>
-              <input type="text" value="와니" class="info-content" />
+              <input type="text" v-model="nameValue" class="info-content" />
             </div>
             <div class="info-item-box">
               <label class="info-title">🤗소개</label>
               <textarea
                 class="info-content info-content--intro"
                 placeholder="나를 소개해봐요!"
-              ></textarea>
+                v-model="introValue"
+              >
+              </textarea>
             </div>
-            <span class="btn-save">저장하기</span>
+            <span class="btn-save" @click="clickBaseProfileSaveBtn">
+              저장하기
+            </span>
           </div>
         </section>
         <section class="profile-container__content">
@@ -82,19 +94,75 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent, onMounted, ref } from 'vue';
 import { useStore } from 'vuex';
 import BaseLayout from '@/components/templates/BaseLayout.vue';
+import {
+  EditProfileReq,
+  editProfile,
+  editProfileImage,
+  getProfile,
+} from '@/api/modules/user';
+import useToast from '@/composables/toast';
 
 export default defineComponent({
   name: 'Profile',
   components: { BaseLayout },
   setup() {
     const store = useStore();
+    const { triggerToast } = useToast();
     const profilePicture = ref(store.getters['user/getProfileImageUrl']);
+    const profileData = new FormData();
+    const nameValue = ref<string | undefined>('');
+    const introValue = ref<string | undefined>('');
+
+    const loadFile = (event: any) => {
+      const { target } = event;
+      const file = target?.files[0];
+      profileData.append('profileImageFile', file);
+      profilePicture.value = URL.createObjectURL(file);
+    };
+    const clickProfileImageSaveBtn = async () => {
+      try {
+        await editProfileImage(profileData);
+        await triggerToast('프로필 이미지가 수정되었습니다😁', 'success');
+      } catch (error) {
+        console.error(error);
+        await triggerToast('프로필 이미지 수정을 실패했습니다☹', 'danger');
+      }
+    };
+    const clickBaseProfileSaveBtn = async () => {
+      const data: EditProfileReq = {
+        name: nameValue.value,
+        intro: introValue.value,
+      };
+      try {
+        await editProfile(data);
+        await triggerToast('기본정보가 수정되었습니다😁', 'success');
+      } catch (error) {
+        console.error(error);
+        await triggerToast('기본정보 수정을 실패했습니다☹', 'danger');
+      }
+    };
+
+    onMounted(async () => {
+      const { data } = await getProfile();
+      const { name, intro } = data.data[0];
+
+      nameValue.value = name;
+      introValue.value = intro;
+
+      store.commit('user/setName', name);
+      store.commit('user/setIntro', intro);
+    });
 
     return {
       profilePicture,
+      nameValue,
+      introValue,
+      loadFile,
+      clickProfileImageSaveBtn,
+      clickBaseProfileSaveBtn,
     };
   },
 });
