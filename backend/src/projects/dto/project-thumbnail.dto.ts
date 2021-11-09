@@ -7,9 +7,8 @@ export class ProjectThumbnailDto extends PickType(Project, [
   'logoImageUrl',
   'intro',
   'location',
-  'skills',
   'isClosed',
   'createdAt',
   'updatedAt',
-  'deletedAt',
+  'skills',
 ] as const) {}

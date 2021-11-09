@@ -12,5 +12,4 @@ export class ProjectDto extends PickType(Project, [
   'isClosed',
   'createdAt',
   'updatedAt',
-  'deletedAt',
 ] as const) {}

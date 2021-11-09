@@ -20,9 +20,8 @@ export class ProjectsService {
       // TO-DO: 필터링 적용
       select: [
         'id',
-        'ownerId',
-        'logoImageUrl',
         'title',
+        'logoImageUrl',
         'intro',
         'location',
         'isClosed',
