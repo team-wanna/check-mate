@@ -93,7 +93,7 @@ export class User extends BaseEntity {
 
   @ApiProperty({
     description: '탈퇴일',
-    example: 'null',
+    example: null,
   })
   @DeleteDateColumn({
     name: 'deleted_at',

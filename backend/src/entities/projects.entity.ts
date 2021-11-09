@@ -114,7 +114,7 @@ export class Project extends BaseEntity {
 
   @ApiProperty({
     description: '삭제일',
-    example: 'null',
+    example: null,
   })
   @DeleteDateColumn({
     name: 'deleted_at',
