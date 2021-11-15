@@ -9,9 +9,14 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/auth',
-    name: 'GoogleLogin',
+    name: 'Login',
     component: () =>
       import(/* webpackChunkName: "Login" */ '@/components/pages/Login.vue'),
+  },
+  {
+    path: '/profile',
+    name: 'Profile',
+    component: () => import('@/components/pages/Profile.vue'),
   },
 ];
 

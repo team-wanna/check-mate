@@ -1,5 +1,4 @@
 <template>
-  <navigation-bar />
   <div class="container">
     <header>
       <slot name="header"></slot>
@@ -13,19 +12,9 @@
   </div>
 </template>
 
-<script>
-import NavigationBar from '@/components/UI/organisms/NavigationBar.vue';
-
-export default {
-  name: 'BaseLayout',
-  components: { NavigationBar },
-};
-</script>
-
-<style scoped>
+<style lang="scss" scoped>
 .container {
-  margin: 0 auto;
-  width: 1200px;
-  overflow: auto;
+  width: calc(50vw);
+  margin: calc($--nav-height * 2) auto;
 }
 </style>

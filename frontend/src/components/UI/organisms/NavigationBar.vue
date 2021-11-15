@@ -1,5 +1,5 @@
 <template>
-  <nav class="container">
+  <nav class="nav-container">
     <fa :icon="['fas', 'chess']" class="home-icon" />
     <div class="item-container">
       <section class="item-container__item-left">
@@ -19,15 +19,17 @@ import LoginButton from '@/components/UI/atoms/LoginButton.vue';
 export default defineComponent({
   name: 'NavigationBar',
   components: { LoginButton },
-  props: {},
 });
 </script>
 
 <style lang="scss" scoped>
-.container {
+.nav-container {
+  position: fixed;
+  top: 0;
   display: flex;
+  width: 100vw;
   height: 100px;
-  border-bottom: $border solid 3px;
+  border-bottom: $--color-border solid 3px;
   align-items: center;
 }
 .item-container {

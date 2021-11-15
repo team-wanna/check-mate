@@ -4,33 +4,40 @@ import { RootState } from '@/utils/define';
 type UserState = 'signUp' | 'loggedIn' | 'loggedOut';
 
 interface State {
-  name: string;
-  profileImageUrl: string;
   userState: UserState;
+  profileImageUrl: string;
+  name: string;
+  intro: string;
 }
+
 const user: Module<State, RootState> = {
   namespaced: true,
   state: {
-    name: '',
-    profileImageUrl: '',
     userState: 'loggedOut',
+    profileImageUrl: '',
+    name: '',
+    intro: '',
   },
   mutations: {
-    setName: (state: State, name: string) => {
-      state.name = name;
+    setUserState: (state: State, userState: UserState) => {
+      state.userState = userState;
     },
     setProfileImageUrl: (state: State, profileImageUrl: string) => {
       state.profileImageUrl = profileImageUrl;
     },
-    setUserState: (state: State, userState: UserState) => {
-      state.userState = userState;
+    setName: (state: State, name: string) => {
+      state.name = name;
+    },
+    setIntro: (state: State, intro: string) => {
+      state.intro = intro;
     },
   },
   getters: {
-    getName: (state: State) => state.name,
-    getProfileImageUrl: (state: State) => state.profileImageUrl,
     getUserState: (state: State) => state.userState,
+    getProfileImageUrl: (state: State) => state.profileImageUrl,
+    getName: (state: State) => state.name,
+    getIntro: (state: State) => state.intro,
   },
 };
 
-export default { user };
+export default user;
