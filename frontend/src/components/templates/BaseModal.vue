@@ -89,12 +89,15 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 80px;
+  margin: 100px 100px 50px 100px;
 }
 .icon {
   margin: 4px;
 }
 .icon--large {
   font-size: $--font-size-large;
+}
+.fa-window-close {
+  cursor: pointer;
 }
 </style>
