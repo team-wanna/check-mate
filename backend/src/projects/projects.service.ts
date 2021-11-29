@@ -172,7 +172,7 @@ export class ProjectsService {
 
   async uploadLogoImage(user, id, logoImageFile: Express.Multer.File) {
     const project = await this.projectsRepository.findOne({
-      select: ['ownerId'],
+      select: ['ownerId', 'logoImageUrl'],
       where: { id, deletedAt: null },
     });
     if (!project) {
@@ -180,6 +180,11 @@ export class ProjectsService {
     } else if (user.id !== project.ownerId) {
       throw new ForbiddenException('👻 프로젝트 등록자만 변경할 수 있어요 🌫');
     } else {
+      const key = project.logoImageUrl.split(
+        `https://${process.env.AWS_S3_BUCKET_NAME}.s3.amazonaws.com/`,
+      )[1];
+      await this.awsService.deleteS3Object(key);
+
       const s3Object = await this.awsService.uploadFileToS3(
         'projects',
         logoImageFile,

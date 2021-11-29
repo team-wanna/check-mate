@@ -31,8 +31,6 @@ export class AwsService {
     contentType: string;
   }> {
     try {
-      console.log(this.S3_BUCKET_NAME);
-
       const key = `${folder}/${Date.now()}_${path.basename(
         file.originalname,
       )}`.replace(/ /g, '');

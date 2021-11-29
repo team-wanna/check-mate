@@ -117,15 +117,20 @@ export class UsersService {
   }
 
   async uploadProfileImage(user, profileImageFile: Express.Multer.File) {
-    const { id } = user;
+    const { id, profileImageUrl } = user;
+
+    const key = profileImageUrl.split(
+      `https://${process.env.AWS_S3_BUCKET_NAME}.s3.amazonaws.com/`,
+    )[1];
+    await this.awsService.deleteS3Object(key);
 
     const s3Object = await this.awsService.uploadFileToS3(
       'users',
       profileImageFile,
     );
-    const profileImageUrl = this.awsService.getAwsS3FileUrl(s3Object.key);
+    const newProfileImageUrl = this.awsService.getAwsS3FileUrl(s3Object.key);
     await this.usersRepository.update(id, {
-      profileImageUrl,
+      profileImageUrl: newProfileImageUrl,
     });
 
     return await this.usersRepository.find({ where: { id } });
