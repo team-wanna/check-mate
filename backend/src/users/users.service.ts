@@ -5,6 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { AwsService } from 'src/aws/aws.service';
 import { Skill } from 'src/entities/skills.entity';
 import { getConnection, Repository } from 'typeorm';
 import { User } from '../entities/users.entity';
@@ -14,6 +15,7 @@ export class UsersService {
   constructor(
     @InjectRepository(User) private usersRepository: Repository<User>,
     @InjectRepository(Skill) private skillsRepository: Repository<Skill>,
+    private readonly awsService: AwsService,
   ) {}
 
   getCurrentUser(user) {
@@ -115,11 +117,20 @@ export class UsersService {
   }
 
   async uploadProfileImage(user, profileImageFile: Express.Multer.File) {
-    const { id } = user;
+    const { id, profileImageUrl } = user;
 
-    const profileImageUrl = `users/${profileImageFile.filename}`;
+    const key = profileImageUrl.split(
+      `https://${process.env.AWS_S3_BUCKET_NAME}.s3.amazonaws.com/`,
+    )[1];
+    await this.awsService.deleteS3Object(key);
+
+    const s3Object = await this.awsService.uploadFileToS3(
+      'users',
+      profileImageFile,
+    );
+    const newProfileImageUrl = this.awsService.getAwsS3FileUrl(s3Object.key);
     await this.usersRepository.update(id, {
-      profileImageUrl: `http://localhost:${process.env.PORT}/media/${profileImageUrl}`,
+      profileImageUrl: newProfileImageUrl,
     });
 
     return await this.usersRepository.find({ where: { id } });

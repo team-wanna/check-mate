@@ -1,19 +1,14 @@
 import { Module } from '@nestjs/common';
-import { MulterModule } from '@nestjs/platform-express';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersController } from './users.controller';
 import { User } from '../entities/users.entity';
 import { UsersService } from './users.service';
 import { Skill } from 'src/entities/skills.entity';
+import { AwsService } from 'src/aws/aws.service';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([User, Skill]),
-    MulterModule.register({
-      dest: './upload',
-    }),
-  ],
+  imports: [TypeOrmModule.forFeature([User, Skill])],
   controllers: [UsersController],
-  providers: [UsersService],
+  providers: [UsersService, AwsService],
 })
 export class UsersModule {}

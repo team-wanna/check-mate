@@ -18,7 +18,6 @@ import { UpdateSkillDto } from 'src/skills/dto/update-skill.dto';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { ApiResponseDto } from 'src/common/decorators/api-response-dto.decorator';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
-import { multerOptions } from 'src/common/utils/multer.options';
 import { AnotherUserDto } from './dto/another-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserDto } from './dto/user.dto';
@@ -78,7 +77,7 @@ export class UsersController {
   @ApiOperation({ summary: '프로필 이미지 수정하기' })
   @ApiResponseDto(UserDto)
   @UseGuards(JwtAuthGuard)
-  @UseInterceptors(FileInterceptor('profileImageFile', multerOptions('users')))
+  @UseInterceptors(FileInterceptor('profileImageFile'))
   @Post('me/upload')
   uploadProfileImage(
     @CurrentUser() user,

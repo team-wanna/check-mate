@@ -4,6 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { AwsService } from 'src/aws/aws.service';
 import { Skill } from 'src/entities/skills.entity';
 import { getConnection, Repository } from 'typeorm';
 import { Project } from '../entities/projects.entity';
@@ -13,6 +14,7 @@ export class ProjectsService {
   constructor(
     @InjectRepository(Project) private projectsRepository: Repository<Project>,
     @InjectRepository(Skill) private skillsRepository: Repository<Skill>,
+    private readonly awsService: AwsService,
   ) {}
 
   async getAllProjects() {
@@ -168,26 +170,28 @@ export class ProjectsService {
     }
   }
 
-  async uploadProjectLogoImage(
-    user,
-    id,
-    projectLogoImageFile: Express.Multer.File,
-  ) {
+  async uploadLogoImage(user, id, logoImageFile: Express.Multer.File) {
     const project = await this.projectsRepository.findOne({
-      select: ['ownerId'],
+      select: ['ownerId', 'logoImageUrl'],
       where: { id, deletedAt: null },
     });
-
     if (!project) {
       throw new NotFoundException('👻 존재하지 않는 프로젝트에요 🌫');
     } else if (user.id !== project.ownerId) {
       throw new ForbiddenException('👻 프로젝트 등록자만 변경할 수 있어요 🌫');
     } else {
-      // TO-DO: 사진 새로 업로드시 기존에 있던 사진은 보관하지 않도록
-      // TO-DO: 직접 등록한 로고 이미지를 삭제하여 기본 이미지로 설정하는 기능 추가할지
-      const projectLogoImageUrl = `projects/${projectLogoImageFile.filename}`;
+      const key = project.logoImageUrl.split(
+        `https://${process.env.AWS_S3_BUCKET_NAME}.s3.amazonaws.com/`,
+      )[1];
+      await this.awsService.deleteS3Object(key);
+
+      const s3Object = await this.awsService.uploadFileToS3(
+        'projects',
+        logoImageFile,
+      );
+      const logoImageUrl = this.awsService.getAwsS3FileUrl(s3Object.key);
       await this.projectsRepository.update(id, {
-        logoImageUrl: `http://localhost:${process.env.PORT}/media/${projectLogoImageUrl}`,
+        logoImageUrl,
       });
 
       return await this.projectsRepository.find({ where: { id } });
