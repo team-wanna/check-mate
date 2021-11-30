@@ -9,6 +9,7 @@ import { ProjectsModule } from './projects/projects.module';
 import { Project } from './entities/projects.entity';
 import { Skill } from './entities/skills.entity';
 import { AwsModule } from './aws/aws.module';
+import { SkillsModule } from './skills/skills.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { AwsModule } from './aws/aws.module';
     AuthModule,
     ProjectsModule,
     AwsModule,
+    SkillsModule,
   ],
   controllers: [],
   providers: [],
