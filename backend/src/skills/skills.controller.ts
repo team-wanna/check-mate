@@ -1,7 +1,8 @@
 import { Controller, Get, Query } from '@nestjs/common';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SkillsService } from './skills.service';
 
+@ApiTags('Skill')
 @Controller('api/skills')
 export class SkillsController {
   constructor(private readonly skillsService: SkillsService) {}
