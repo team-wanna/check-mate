@@ -3,9 +3,6 @@
     <div v-if="isShow" class="modal">
       <div class="container">
         <header class="base-modal-header">
-          <div class="logo-container">
-            <fa :icon="['fas', 'chess']" class="icon icon--large" />
-          </div>
           <fa
             :icon="['far', 'window-close']"
             class="icon icon--large"
@@ -69,14 +66,16 @@ export default defineComponent({
 .container {
   width: 800px;
   height: 550px;
-  border-radius: 5px;
+  border-radius: 20px;
   background-color: #ffffff;
 }
 .base-modal-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: right;
+  //justify-content: space-between;
   align-items: center;
-  border-radius: 5px;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
   background-color: #f8f9fa;
   height: 60px;
   padding: 0 15px;
