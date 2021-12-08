@@ -9,6 +9,7 @@
           v-if="profileImage"
           class="profile-icon--custom"
           :src="profileImage"
+          alt="profile icon"
         />
         <fa
           v-else
@@ -72,6 +73,7 @@ export default defineComponent({
     };
     const clickMyProfile = () => {
       router.push('/profile');
+      isShowProfilePopup.value = false;
     };
 
     return {
@@ -90,17 +92,6 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
-.btn--primary {
-  padding: 10px;
-  border-radius: 10px;
-  background-color: $--color-primary;
-  color: #ffffff;
-
-  transition: background-color 0.5s ease;
-}
-.btn--primary:hover {
-  background-color: $--color-primary-dark;
-}
 .icon {
   cursor: pointer;
   font-size: $--font-size-medium;
