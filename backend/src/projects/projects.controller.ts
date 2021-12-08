@@ -102,7 +102,7 @@ export class ProjectsController {
     return this.projectsService.deleteProject(user, id);
   }
 
-  @ApiOperation({ summary: '프로젝트 로고 이미지 수정하기' })
+  @ApiOperation({ summary: '프로젝트 로고 이미지 변경하기' })
   @ApiResponseDto(ProjectDto)
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('logoImageFile'))
@@ -113,5 +113,13 @@ export class ProjectsController {
     @UploadedFile() logoImageFile: Express.Multer.File,
   ) {
     return this.projectsService.uploadLogoImage(user, id, logoImageFile);
+  }
+
+  @ApiOperation({ summary: '프로젝트 로고 이미지 초기화(삭제)하기' })
+  @ApiResponseDto(ProjectDto)
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id/upload')
+  initLogoImage(@CurrentUser() user, @Param('id', ParseIntPipe) id: number) {
+    return this.projectsService.initLogoImage(user, id);
   }
 }

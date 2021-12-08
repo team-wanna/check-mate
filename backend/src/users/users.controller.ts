@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -75,7 +76,7 @@ export class UsersController {
     return this.usersService.deleteUserSkill(user, body);
   }
 
-  @ApiOperation({ summary: '프로필 이미지 수정하기' })
+  @ApiOperation({ summary: '프로필 이미지 변경하기' })
   @ApiResponseDto(UserDto)
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('profileImageFile'))
@@ -85,6 +86,14 @@ export class UsersController {
     @UploadedFile() profileImageFile: Express.Multer.File,
   ) {
     return this.usersService.uploadProfileImage(user, profileImageFile);
+  }
+
+  @ApiOperation({ summary: '프로필 이미지 초기화하기' })
+  @ApiResponseDto(UserDto)
+  @UseGuards(JwtAuthGuard)
+  @Delete('me/upload')
+  initProfileImage(@CurrentUser() user, @Query('select') select: string) {
+    return this.usersService.initProfileImage(user, select);
   }
 
   @ApiOperation({ summary: '다른 유저 정보 조회하기' })
