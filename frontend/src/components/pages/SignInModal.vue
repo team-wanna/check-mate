@@ -15,7 +15,7 @@
     </template>
     <template #footer>
       <div class="footer-container">
-        <span class="sign-in-btn" @click="clickSignIn">가입 완료</span>
+        <span class="btn--primary" @click="clickSignIn">가입 완료</span>
       </div>
     </template>
   </base-modal>
@@ -78,7 +78,7 @@ export default defineComponent({
 }
 .sub-title {
   font-size: $--font-size-medium;
-  margin-bottom: 15px;
+  margin: 15px 0;
 }
 .nickname-container {
   display: flex;
@@ -91,10 +91,5 @@ export default defineComponent({
 .footer-container {
   display: flex;
   justify-content: center;
-  .sign-in-btn {
-    padding: 5px 10px;
-    border-radius: 5px;
-    border: 3px solid $--color-primary;
-  }
 }
 </style>
