@@ -82,6 +82,9 @@ export class UsersService {
 
   async addUserSkill(user, data) {
     const { id } = user;
+
+    //TODO: 사용자 존재하지 않을 경우 에러 처리 로직 추가
+
     const { skillName } = data;
     const skill = await this.skillsRepository.findOne({
       where: { name: skillName },
@@ -100,6 +103,9 @@ export class UsersService {
 
   async deleteUserSkill(user, data) {
     const { id } = user;
+
+    //TODO: 사용자 존재하지 않을 경우 에러 처리 로직 추가
+
     const { skillName } = data;
     const skill = await this.skillsRepository.findOne({
       where: { name: skillName },
@@ -119,6 +125,8 @@ export class UsersService {
   async uploadProfileImage(user, profileImageFile: Express.Multer.File) {
     const { id, profileImageUrl } = user;
 
+    //TODO: 사용자 존재하지 않을 경우 에러 처리 로직 추가
+
     const key = profileImageUrl.split(
       `https://${process.env.AWS_S3_BUCKET_NAME}.s3.amazonaws.com/`,
     )[1];
@@ -131,6 +139,18 @@ export class UsersService {
     const newProfileImageUrl = this.awsService.getAwsS3FileUrl(s3Object.key);
     await this.usersRepository.update(id, {
       profileImageUrl: newProfileImageUrl,
+    });
+
+    return await this.usersRepository.find({ where: { id } });
+  }
+
+  async initProfileImage(user, select) {
+    const { id } = user;
+
+    //TODO: 사용자 존재하지 않을 경우 에러 처리 로직 추가
+
+    await this.usersRepository.update(id, {
+      profileImageUrl: `https://${process.env.AWS_S3_BUCKET_NAME}.s3.amazonaws.com/users/${select}.png`,
     });
 
     return await this.usersRepository.find({ where: { id } });
