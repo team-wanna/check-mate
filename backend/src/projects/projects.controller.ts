@@ -115,7 +115,7 @@ export class ProjectsController {
     return this.projectsService.uploadLogoImage(user, id, logoImageFile);
   }
 
-  @ApiOperation({ summary: '프로젝트 로고 이미지 초기화하기' })
+  @ApiOperation({ summary: '프로젝트 로고 이미지 초기화(삭제)하기' })
   @ApiResponseDto(ProjectDto)
   @UseGuards(JwtAuthGuard)
   @Delete(':id/upload')
