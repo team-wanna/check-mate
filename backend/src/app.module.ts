@@ -1,8 +1,6 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { LoggerMiddleware } from './common/middlewares/logger.middleware';
 import { User } from './entities/users.entity';
 import { UsersModule } from './users/users.module';
@@ -10,6 +8,8 @@ import { AuthModule } from './auth/auth.module';
 import { ProjectsModule } from './projects/projects.module';
 import { Project } from './entities/projects.entity';
 import { Skill } from './entities/skills.entity';
+import { AwsModule } from './aws/aws.module';
+import { SkillsModule } from './skills/skills.module';
 
 @Module({
   imports: [
@@ -30,9 +30,11 @@ import { Skill } from './entities/skills.entity';
     UsersModule,
     AuthModule,
     ProjectsModule,
+    AwsModule,
+    SkillsModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

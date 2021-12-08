@@ -12,19 +12,19 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SkillDto } from 'src/skills/dto/skill.dto';
 import { UpdateSkillDto } from 'src/skills/dto/update-skill.dto';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { ApiResponseDto } from 'src/common/decorators/api-response-dto.decorator';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
-import { multerOptions } from 'src/common/utils/multer.options';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { ProjectThumbnailDto } from './dto/project-thumbnail.dto';
 import { ProjectDto } from './dto/project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { ProjectsService } from './projects.service';
 
+@ApiTags('Project')
 @Controller('api/projects')
 export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) {}
@@ -102,22 +102,24 @@ export class ProjectsController {
     return this.projectsService.deleteProject(user, id);
   }
 
-  @ApiOperation({ summary: '프로젝트 로고 이미지 수정하기' })
+  @ApiOperation({ summary: '프로젝트 로고 이미지 변경하기' })
   @ApiResponseDto(ProjectDto)
   @UseGuards(JwtAuthGuard)
-  @UseInterceptors(
-    FileInterceptor('projectLogoImageFile', multerOptions('projects')),
-  )
+  @UseInterceptors(FileInterceptor('logoImageFile'))
   @Post(':id/upload')
-  uploadProjectLogoImage(
+  uploadLogoImage(
     @CurrentUser() user,
     @Param('id', ParseIntPipe) id: number,
-    @UploadedFile() projectLogoImageFile: Express.Multer.File,
+    @UploadedFile() logoImageFile: Express.Multer.File,
   ) {
-    return this.projectsService.uploadProjectLogoImage(
-      user,
-      id,
-      projectLogoImageFile,
-    );
+    return this.projectsService.uploadLogoImage(user, id, logoImageFile);
+  }
+
+  @ApiOperation({ summary: '프로젝트 로고 이미지 초기화(삭제)하기' })
+  @ApiResponseDto(ProjectDto)
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id/upload')
+  initLogoImage(@CurrentUser() user, @Param('id', ParseIntPipe) id: number) {
+    return this.projectsService.initLogoImage(user, id);
   }
 }
