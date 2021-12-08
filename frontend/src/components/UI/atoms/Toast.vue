@@ -7,9 +7,9 @@
         class="toast"
         :class="`toast--${toast.type}`"
       >
-        <p class="toast-content">
+        <span class="toast-content">
           {{ toast.message }}
-        </p>
+        </span>
       </div>
     </transition-group>
   </div>

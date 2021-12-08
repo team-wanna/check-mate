@@ -124,11 +124,16 @@ export default defineComponent({
     };
     const clickProfileImageSaveBtn = async () => {
       try {
-        await editProfileImage(profileData);
-        await triggerToast('프로필 이미지가 수정되었습니다😁', 'success');
+        const { data } = await editProfileImage(profileData);
+        if (data.success) {
+          store.commit('user/setProfileImageUrl', data.data[0].profileImageUrl);
+          await triggerToast('프로필 이미지가 수정되었습니다😁', 'success');
+        } else {
+          await triggerToast('프로필 이미지 수정을 실패했습니다☹', 'danger');
+        }
       } catch (error) {
         console.error(error);
-        await triggerToast('프로필 이미지 수정을 실패했습니다☹', 'danger');
+        await triggerToast(error, 'danger');
       }
     };
     const clickBaseProfileSaveBtn = async () => {

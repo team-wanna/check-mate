@@ -1,9 +1,9 @@
 <template>
   <nav class="nav-container">
-    <fa :icon="['fas', 'chess']" class="home-icon" />
     <div class="item-container">
-      <section class="item-container__item-left">
-        <a>프로젝트</a>
+      <section class="item-container__item-left" @click="clickHomeBtn">
+        <fa :icon="['fas', 'chess']" class="home-icon" />
+        <a>체크메이트</a>
       </section>
       <section class="item-container__item-right">
         <login-button />
@@ -15,10 +15,20 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import LoginButton from '@/components/UI/atoms/LoginButton.vue';
+import router from '@/router';
 
 export default defineComponent({
   name: 'NavigationBar',
   components: { LoginButton },
+  setup() {
+    const clickHomeBtn = () => {
+      router.push({ name: 'Home' });
+    };
+
+    return {
+      clickHomeBtn,
+    };
+  },
 });
 </script>
 
@@ -31,21 +41,23 @@ export default defineComponent({
   height: 100px;
   border-bottom: $--color-border solid 3px;
   align-items: center;
+  background-color: #ffffff;
 }
 .item-container {
   width: 100%;
   height: 100%;
-  margin: 0 200px 0 50px;
+  margin: 0 200px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  cursor: pointer;
   a {
     font-size: 36px;
   }
 }
 
 .home-icon {
-  margin-left: 200px;
+  margin-right: 10px;
   font-size: 50px;
 }
 </style>
