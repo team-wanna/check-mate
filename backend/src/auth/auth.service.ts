@@ -17,28 +17,25 @@ export class AuthService {
     if (!req.user) {
       throw new UnauthorizedException('인증 오류');
     }
-
     const { provider, subId, profileImageUrl } = req.user;
-
     const encryptedSubId = crypto
       .createHmac('sha256', subId)
       .update('json')
       .digest('base64');
-
-    const exist = await this.usersRepository.findOne({
-      where: { provider, subId: encryptedSubId, deletedAt: null },
+    const isExist = await this.usersRepository.findOne({
+      where: { provider, subId: encryptedSubId },
     });
-    if (!exist) {
+    // 최초로 로그인한 유저일 경우 DB에 저장
+    if (!isExist) {
       await this.usersRepository.save({
         provider,
         subId: encryptedSubId,
         profileImageUrl,
       });
     }
-
     const user = await this.usersRepository.findOne({
       select: ['id', 'name', 'profileImageUrl'],
-      where: { provider, subId: encryptedSubId, deletedAt: null },
+      where: { provider, subId: encryptedSubId },
     });
     const payload: Payload = { subId, sub: user.id };
     return [

@@ -12,14 +12,16 @@ import { Project } from '../entities/projects.entity';
 @Injectable()
 export class ProjectsService {
   constructor(
-    @InjectRepository(Project) private projectsRepository: Repository<Project>,
-    @InjectRepository(Skill) private skillsRepository: Repository<Skill>,
+    @InjectRepository(Project)
+    private readonly projectsRepository: Repository<Project>,
+    @InjectRepository(Skill)
+    private readonly skillsRepository: Repository<Skill>,
     private readonly awsService: AwsService,
   ) {}
 
   async getAllProjects() {
     const projects = await this.projectsRepository.find({
-      // TO-DO: 필터링 적용
+      //TODO: 필터링 적용
       select: [
         'id',
         'title',
@@ -30,10 +32,8 @@ export class ProjectsService {
         'createdAt',
         'updatedAt',
       ],
-      where: { deletedAt: null },
       order: { applicantCount: 'DESC' },
     });
-
     return await Promise.all(
       projects.map(async (project) => {
         return {
@@ -44,182 +44,136 @@ export class ProjectsService {
     );
   }
 
-  async getProject(id) {
-    const project = await this.projectsRepository.find({
-      where: { id, deletedAt: null },
-    });
-
-    if (project.length === 0) {
-      throw new NotFoundException('👻 존재하지 않는 프로젝트에요 🌫');
-    } else {
-      return project;
-    }
-  }
-
-  async createProject(user, data) {
+  async createProject(userId, data) {
     const { title, logoImageUrl, intro, description, location } = data;
-
-    const newProject = await this.projectsRepository.save({
-      ownerId: user.id,
+    const project = await this.projectsRepository.save({
+      ownerId: userId,
       title,
-      logoImageUrl: logoImageUrl || null,
+      logoImageUrl,
       intro,
       description,
       location,
     });
-
-    return await this.projectsRepository.find({
-      where: { id: newProject.id, deletedAt: null },
-    });
+    return this.getProject(project.id);
   }
 
-  async updateProject(user, id, data) {
-    const project = await this.projectsRepository.findOne({
-      select: ['ownerId'],
-      where: { id, deletedAt: null },
+  async getProject(projectId) {
+    const project = await this.projectsRepository.findOne(projectId, {
+      select: [
+        'id',
+        'ownerId',
+        'title',
+        'logoImageUrl',
+        'intro',
+        'description',
+        'location',
+        'isClosed',
+        'createdAt',
+        'updatedAt',
+      ],
     });
-
     if (!project) {
-      throw new NotFoundException('👻 존재하지 않는 프로젝트에요 🌫');
-    } else if (user.id !== project.ownerId) {
-      throw new ForbiddenException('👻 프로젝트 등록자만 변경할 수 있어요 🌫');
-    } else {
-      await this.projectsRepository.update(id, { ...data });
-      return await this.projectsRepository.find({ where: { id } });
+      throw new NotFoundException();
     }
+    const skills = await this.getProjectSkills(projectId);
+    return [{ ...project, skills }];
   }
 
-  async getProjectSkills(id) {
+  async updateProject(userId, projectId, data) {
+    const project = await this.getProject(projectId);
+    if (userId !== project[0].ownerId) {
+      throw new ForbiddenException('작성자만 변경할 수 있습니다.');
+    }
+    await this.projectsRepository.update(projectId, { ...data });
+    return this.getProject(projectId);
+  }
+
+  async deleteProject(userId, projectId) {
+    const project = await this.getProject(projectId);
+    if (userId !== project[0].ownerId) {
+      throw new ForbiddenException('작성자만 변경할 수 있습니다.');
+    }
+    await this.projectsRepository.softDelete(projectId);
+  }
+
+  private async getProjectSkills(projectId) {
     const skills = await getConnection()
       .createQueryBuilder()
       .relation(Project, 'skills')
-      .of(id)
+      .of(projectId)
       .loadMany();
-
     return skills;
   }
 
-  async addProjectSkill(user, id, data) {
-    const project = await this.projectsRepository.findOne({
-      select: ['ownerId'],
-      where: { id, deletedAt: null },
-    });
-
-    if (!project) {
-      throw new NotFoundException('👻 존재하지 않는 프로젝트에요 🌫');
-    } else if (user.id !== project.ownerId) {
-      throw new ForbiddenException('👻 프로젝트 등록자만 변경할 수 있어요 🌫');
+  async addProjectSkill(userId, projectId, skillName) {
+    const project = await this.getProject(projectId);
+    if (userId !== project[0].ownerId) {
+      throw new ForbiddenException('작성자만 변경할 수 있습니다.');
     }
-
-    const { skillName } = data;
     const skill = await this.skillsRepository.findOne({
       where: { name: skillName },
     });
-    const skillId = skill.id;
-
     // 조인 테이블에 추가
     await getConnection()
       .createQueryBuilder()
       .relation(Project, 'skills')
-      .of(id)
-      .add(skillId);
-
-    return this.getProjectSkills(id);
+      .of(projectId)
+      .add(skill.id);
+    return this.getProjectSkills(projectId);
   }
 
-  async deleteProjectSkill(user, id, data) {
-    const project = await this.projectsRepository.findOne({
-      select: ['ownerId'],
-      where: { id, deletedAt: null },
-    });
-
-    if (!project) {
-      throw new NotFoundException('👻 존재하지 않는 프로젝트에요 🌫');
-    } else if (user.id !== project.ownerId) {
-      throw new ForbiddenException('👻 프로젝트 등록자만 변경할 수 있어요 🌫');
+  async deleteProjectSkill(userId, projectId, skillName) {
+    const project = await this.getProject(projectId);
+    if (userId !== project[0].ownerId) {
+      throw new ForbiddenException('작성자만 변경할 수 있습니다.');
     }
-
-    const { skillName } = data;
     const skill = await this.skillsRepository.findOne({
       where: { name: skillName },
     });
-    const skillId = skill.id;
-
     // 조인 테이블에서 삭제
     await getConnection()
       .createQueryBuilder()
       .relation(Project, 'skills')
-      .of(id)
-      .remove(skillId);
-
-    return this.getProjectSkills(id);
+      .of(projectId)
+      .remove(skill.id);
+    return this.getProjectSkills(projectId);
   }
 
-  async deleteProject(user, id) {
-    const project = await this.projectsRepository.findOne({
-      select: ['ownerId'],
-      where: { id, deletedAt: null },
-    });
-
-    if (!project) {
-      throw new NotFoundException('👻 존재하지 않는 프로젝트에요 🌫');
-    } else if (user.id !== project.ownerId) {
-      throw new ForbiddenException('👻 프로젝트 등록자만 변경할 수 있어요 🌫');
-    } else {
-      await this.projectsRepository.softDelete(id);
-    }
-  }
-
-  async uploadLogoImage(user, id, logoImageFile: Express.Multer.File) {
-    const project = await this.projectsRepository.findOne({
-      select: ['ownerId', 'logoImageUrl'],
-      where: { id, deletedAt: null },
-    });
-    if (!project) {
-      throw new NotFoundException('👻 존재하지 않는 프로젝트에요 🌫');
-    } else if (user.id !== project.ownerId) {
-      throw new ForbiddenException('👻 프로젝트 등록자만 변경할 수 있어요 🌫');
-    } else {
-      if (project.logoImageUrl) {
-        const key = project.logoImageUrl.split(
-          `https://${process.env.AWS_S3_BUCKET_NAME}.s3.amazonaws.com/`,
-        )[1];
-        await this.awsService.deleteS3Object(key);
-      }
-
-      const s3Object = await this.awsService.uploadFileToS3(
-        'projects',
-        logoImageFile,
-      );
-      const logoImageUrl = this.awsService.getAwsS3FileUrl(s3Object.key);
-      await this.projectsRepository.update(id, {
-        logoImageUrl,
-      });
-
-      return await this.projectsRepository.find({ where: { id } });
-    }
-  }
-
-  async initLogoImage(user, id) {
-    const project = await this.projectsRepository.findOne({
-      select: ['ownerId', 'logoImageUrl'],
-      where: { id, deletedAt: null },
-    });
-    if (!project) {
-      throw new NotFoundException('👻 존재하지 않는 프로젝트에요 🌫');
-    } else if (user.id !== project.ownerId) {
-      throw new ForbiddenException('👻 프로젝트 등록자만 변경할 수 있어요 🌫');
-    } else {
-      const key = project.logoImageUrl.split(
+  private async deleteBeforeLogoImage(logoImageUrl) {
+    if (logoImageUrl) {
+      const key = logoImageUrl.split(
         `https://${process.env.AWS_S3_BUCKET_NAME}.s3.amazonaws.com/`,
       )[1];
       await this.awsService.deleteS3Object(key);
-
-      await this.projectsRepository.update(id, {
-        logoImageUrl: null,
-      });
-
-      return await this.projectsRepository.find({ where: { id } });
     }
+  }
+
+  async uploadLogoImage(userId, projectId, logoImageFile: Express.Multer.File) {
+    const project = await this.getProject(projectId);
+    if (userId !== project[0].ownerId) {
+      throw new ForbiddenException('작성자만 변경할 수 있습니다.');
+    }
+    await this.deleteBeforeLogoImage(project[0].logoImageUrl);
+    const s3Object = await this.awsService.uploadFileToS3(
+      'projects',
+      logoImageFile,
+    );
+    const logoImageUrl = this.awsService.getS3FileUrl(s3Object.key);
+    await this.projectsRepository.update(projectId, {
+      logoImageUrl,
+    });
+    return this.getProject(projectId);
+  }
+
+  async initLogoImage(userId, projectId) {
+    const project = await this.getProject(projectId);
+    if (userId !== project[0].ownerId) {
+      throw new ForbiddenException('작성자만 변경할 수 있습니다.');
+    }
+    await this.deleteBeforeLogoImage(project[0].logoImageUrl);
+    await this.projectsRepository.update(projectId, {
+      logoImageUrl: null,
+    });
+    return this.getProject(projectId);
   }
 }

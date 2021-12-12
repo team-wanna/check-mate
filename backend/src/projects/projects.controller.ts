@@ -1,3 +1,4 @@
+import { Skill } from 'src/entities/skills.entity';
 import {
   Body,
   Controller,
@@ -7,14 +8,13 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { SkillDto } from 'src/skills/dto/skill.dto';
-import { UpdateSkillDto } from 'src/skills/dto/update-skill.dto';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { ApiResponseDto } from 'src/common/decorators/api-response-dto.decorator';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
@@ -36,19 +36,19 @@ export class ProjectsController {
     return this.projectsService.getAllProjects();
   }
 
-  @ApiOperation({ summary: '프로젝트 조회하기' })
-  @ApiResponseDto(ProjectDto)
-  @Get(':id')
-  getProject(@Param('id', ParseIntPipe) id: number) {
-    return this.projectsService.getProject(id);
-  }
-
   @ApiOperation({ summary: '프로젝트 생성하기' })
   @ApiResponseDto(ProjectDto)
   @UseGuards(JwtAuthGuard)
   @Post()
   createProject(@CurrentUser() user, @Body() body: CreateProjectDto) {
-    return this.projectsService.createProject(user, body);
+    return this.projectsService.createProject(user.id, body);
+  }
+
+  @ApiOperation({ summary: '프로젝트 조회하기' })
+  @ApiResponseDto(ProjectDto)
+  @Get(':id')
+  getProject(@Param('id', ParseIntPipe) projectId: number) {
+    return this.projectsService.getProject(projectId);
   }
 
   @ApiOperation({ summary: '프로젝트 수정하기' })
@@ -57,49 +57,49 @@ export class ProjectsController {
   @Patch(':id')
   updateProject(
     @CurrentUser() user,
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id', ParseIntPipe) projectId: number,
     @Body() body: UpdateProjectDto,
   ) {
-    return this.projectsService.updateProject(user, id, body);
-  }
-
-  @ApiOperation({ summary: '프로젝트 스킬 가져오기' })
-  @ApiResponseDto(SkillDto)
-  @Get(':id/skills')
-  getProjectSkills(@Param('id', ParseIntPipe) id: number) {
-    return this.projectsService.getProjectSkills(id);
-  }
-
-  @ApiOperation({ summary: '프로젝트 스킬 추가하기' })
-  @ApiResponseDto(SkillDto)
-  @UseGuards(JwtAuthGuard)
-  @Post(':id/skills')
-  addUserSkill(
-    @CurrentUser() user,
-    @Param('id', ParseIntPipe) id: number,
-    @Body() body: UpdateSkillDto,
-  ) {
-    return this.projectsService.addProjectSkill(user, id, body);
-  }
-
-  @ApiOperation({ summary: '프로젝트 스킬 삭제하기' })
-  @ApiResponseDto(SkillDto)
-  @UseGuards(JwtAuthGuard)
-  @Delete(':id/skills')
-  deleteUserSkill(
-    @CurrentUser() user,
-    @Param('id', ParseIntPipe) id: number,
-    @Body() body: UpdateSkillDto,
-  ) {
-    return this.projectsService.deleteProjectSkill(user, id, body);
+    return this.projectsService.updateProject(user.id, projectId, body);
   }
 
   @ApiOperation({ summary: '프로젝트 삭제하기' })
   @ApiOkResponse({ description: '성공' })
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  deleteProject(@CurrentUser() user, @Param('id', ParseIntPipe) id: number) {
-    return this.projectsService.deleteProject(user, id);
+  deleteProject(
+    @CurrentUser() user,
+    @Param('id', ParseIntPipe) projectId: number,
+  ) {
+    return this.projectsService.deleteProject(user.id, projectId);
+  }
+
+  @ApiOperation({ summary: '프로젝트 스킬 추가하기' })
+  @ApiResponseDto(Skill)
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/skills')
+  addUserSkill(
+    @CurrentUser() user,
+    @Param('id', ParseIntPipe) projectId: number,
+    @Query('name') skillName: string,
+  ) {
+    return this.projectsService.addProjectSkill(user.id, projectId, skillName);
+  }
+
+  @ApiOperation({ summary: '프로젝트 스킬 삭제하기' })
+  @ApiResponseDto(Skill)
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id/skills')
+  deleteUserSkill(
+    @CurrentUser() user,
+    @Param('id', ParseIntPipe) projectId: number,
+    @Query('name') skillName: string,
+  ) {
+    return this.projectsService.deleteProjectSkill(
+      user.id,
+      projectId,
+      skillName,
+    );
   }
 
   @ApiOperation({ summary: '프로젝트 로고 이미지 변경하기' })
@@ -109,17 +109,24 @@ export class ProjectsController {
   @Post(':id/upload')
   uploadLogoImage(
     @CurrentUser() user,
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id', ParseIntPipe) projectId: number,
     @UploadedFile() logoImageFile: Express.Multer.File,
   ) {
-    return this.projectsService.uploadLogoImage(user, id, logoImageFile);
+    return this.projectsService.uploadLogoImage(
+      user.id,
+      projectId,
+      logoImageFile,
+    );
   }
 
   @ApiOperation({ summary: '프로젝트 로고 이미지 초기화(삭제)하기' })
   @ApiResponseDto(ProjectDto)
   @UseGuards(JwtAuthGuard)
   @Delete(':id/upload')
-  initLogoImage(@CurrentUser() user, @Param('id', ParseIntPipe) id: number) {
-    return this.projectsService.initLogoImage(user, id);
+  initLogoImage(
+    @CurrentUser() user,
+    @Param('id', ParseIntPipe) projectId: number,
+  ) {
+    return this.projectsService.initLogoImage(user.id, projectId);
   }
 }

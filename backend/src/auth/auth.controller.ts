@@ -13,7 +13,7 @@ export class AuthController {
   @ApiOperation({ summary: '구글 로그인 요청' })
   @Get('google')
   @UseGuards(AuthGuard('google'))
-  async googleAuth(@Req() req) {}
+  async googleAuth() {}
 
   @ApiOperation({ summary: '구글 로그인 응답' })
   @ApiResponseDto(AuthDto)
@@ -26,7 +26,7 @@ export class AuthController {
   @ApiOperation({ summary: '페이스북 로그인 요청' })
   @Get('facebook')
   @UseGuards(AuthGuard('facebook'))
-  async facebookAuth(@Req() req) {}
+  async facebookAuth() {}
 
   @ApiOperation({ summary: '페이스북 로그인 응답' })
   @ApiResponseDto(AuthDto)
@@ -39,7 +39,7 @@ export class AuthController {
   @ApiOperation({ summary: '깃허브 로그인 요청' })
   @Get('github')
   @UseGuards(AuthGuard('github'))
-  async githubAuth(@Req() req) {}
+  async githubAuth() {}
 
   @ApiOperation({ summary: '깃허브 로그인 응답' })
   @ApiResponseDto(AuthDto)

@@ -18,7 +18,7 @@ export class AwsService {
     this.S3_BUCKET_NAME = this.configService.get('AWS_S3_BUCKET_NAME');
   }
 
-  getAwsS3FileUrl(objectKey: string) {
+  getS3FileUrl(objectKey: string) {
     return `https://${this.S3_BUCKET_NAME}.s3.amazonaws.com/${objectKey}`;
   }
 
