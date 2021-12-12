@@ -1,3 +1,4 @@
+import { Skill } from 'src/entities/skills.entity';
 import {
   Body,
   Controller,
@@ -14,7 +15,6 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { SkillDto } from 'src/skills/dto/skill.dto';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { ApiResponseDto } from 'src/common/decorators/api-response-dto.decorator';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
@@ -52,7 +52,7 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: '유저 스킬 추가하기' })
-  @ApiResponseDto(SkillDto)
+  @ApiResponseDto(Skill)
   @UseGuards(JwtAuthGuard)
   @Post('me/skills')
   addUserSkill(@CurrentUser() user, @Query('name') skillName: string) {
@@ -60,7 +60,7 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: '유저 스킬 삭제하기' })
-  @ApiResponseDto(SkillDto)
+  @ApiResponseDto(Skill)
   @UseGuards(JwtAuthGuard)
   @Delete('me/skills')
   deleteUserSkill(@CurrentUser() user, @Query('name') name: string) {
