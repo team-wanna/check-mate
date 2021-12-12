@@ -22,9 +22,9 @@ import { SkillsModule } from './skills/skills.module';
       port: 3306,
       username: process.env.MYSQL_USERNAME,
       password: process.env.MYSQL_PASSWORD,
-      database: 'check_mate',
+      database: process.env.MYSQL_DATABASE,
       entities: [User, Project, Skill],
-      synchronize: true,
+      synchronize: true, //! set 'false' in production
       logging: true,
     }),
     UsersModule,
@@ -33,8 +33,6 @@ import { SkillsModule } from './skills/skills.module';
     AwsModule,
     SkillsModule,
   ],
-  controllers: [],
-  providers: [],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

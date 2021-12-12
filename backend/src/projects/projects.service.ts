@@ -191,7 +191,7 @@ export class ProjectsService {
         'projects',
         logoImageFile,
       );
-      const logoImageUrl = this.awsService.getAwsS3FileUrl(s3Object.key);
+      const logoImageUrl = this.awsService.getS3FileUrl(s3Object.key);
       await this.projectsRepository.update(id, {
         logoImageUrl,
       });

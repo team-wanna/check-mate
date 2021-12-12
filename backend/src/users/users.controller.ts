@@ -15,11 +15,9 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SkillDto } from 'src/skills/dto/skill.dto';
-import { UpdateSkillDto } from 'src/skills/dto/update-skill.dto';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { ApiResponseDto } from 'src/common/decorators/api-response-dto.decorator';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
-import { AnotherUserDto } from './dto/another-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserDto } from './dto/user.dto';
 import { UsersService } from './users.service';
@@ -50,30 +48,23 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Delete('me')
   deleteUser(@CurrentUser() user) {
-    return this.usersService.deleteUser(user);
-  }
-
-  @ApiOperation({ summary: '유저 스킬 가져오기' })
-  @ApiResponseDto(SkillDto)
-  @Get('me/skills')
-  getUserSkills(@CurrentUser() user) {
-    return this.usersService.getUserSkills(user.id);
+    return this.usersService.deleteUser(user.id);
   }
 
   @ApiOperation({ summary: '유저 스킬 추가하기' })
   @ApiResponseDto(SkillDto)
   @UseGuards(JwtAuthGuard)
   @Post('me/skills')
-  addUserSkill(@CurrentUser() user, @Body() body: UpdateSkillDto) {
-    return this.usersService.addUserSkill(user, body);
+  addUserSkill(@CurrentUser() user, @Query('name') skillName: string) {
+    return this.usersService.addUserSkill(user.id, skillName);
   }
 
   @ApiOperation({ summary: '유저 스킬 삭제하기' })
   @ApiResponseDto(SkillDto)
   @UseGuards(JwtAuthGuard)
   @Delete('me/skills')
-  deleteUserSkill(@CurrentUser() user, @Body() body: UpdateSkillDto) {
-    return this.usersService.deleteUserSkill(user, body);
+  deleteUserSkill(@CurrentUser() user, @Query('name') name: string) {
+    return this.usersService.deleteUserSkill(user.id, name);
   }
 
   @ApiOperation({ summary: '프로필 이미지 변경하기' })
@@ -97,9 +88,9 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: '다른 유저 정보 조회하기' })
-  @ApiResponseDto(AnotherUserDto)
+  @ApiResponseDto(UserDto)
   @Get(':id')
-  getAnotherUser(@Param('id', ParseIntPipe) id: number) {
-    return this.usersService.getAnotherUser(id);
+  getAnotherUser(@Param('id', ParseIntPipe) userId: number) {
+    return this.usersService.getAnotherUser(userId);
   }
 }
