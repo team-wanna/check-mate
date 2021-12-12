@@ -80,6 +80,8 @@ export class Project extends BaseEntity {
     description: '프로젝트 지원자 수',
     example: '2',
   })
+  @IsNotEmpty()
+  @IsNumber()
   @Column({ name: 'applicant_count', default: 0 })
   applicantCount: number;
 

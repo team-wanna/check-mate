@@ -44,7 +44,6 @@ export class User extends BaseEntity {
     description: '이름(닉네임)',
     example: '심바',
   })
-  @IsNotEmpty()
   @IsString()
   @Column({ default: null })
   name: string;
@@ -77,6 +76,7 @@ export class User extends BaseEntity {
     description: '가입일',
     example: '2021-09-26T22:04:38.679Z',
   })
+  @IsNotEmpty()
   @CreateDateColumn({
     name: 'created_at',
   })
@@ -86,6 +86,7 @@ export class User extends BaseEntity {
     description: '수정일',
     example: '2021-09-26T22:04:38.679Z',
   })
+  @IsNotEmpty()
   @UpdateDateColumn({
     name: 'updated_at',
   })

@@ -1,11 +1,12 @@
+import { Project } from 'src/entities/projects.entity';
 import { PartialType, PickType } from '@nestjs/swagger';
-import { CreateProjectDto } from './create-project.dto';
 
 export class UpdateProjectDto extends PartialType(
-  PickType(CreateProjectDto, [
+  PickType(Project, [
     'title',
     'intro',
     'description',
     'location',
+    'isClosed',
   ] as const),
 ) {}
