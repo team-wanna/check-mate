@@ -10,6 +10,9 @@ export class SkillsService {
   ) {}
 
   async searchSkill(search) {
+    if (search === '') {
+      return [];
+    }
     return await this.skillsRepository.query(`
       SELECT *
       FROM skill
