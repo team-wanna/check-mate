@@ -80,8 +80,8 @@ export class UsersService {
     return;
   }
 
-  private async getUserSkills(userId) {
-    const skills = await getConnection()
+  private getUserSkills(userId) {
+    const skills = getConnection()
       .createQueryBuilder()
       .relation(User, 'skills')
       .of(userId)
@@ -89,10 +89,10 @@ export class UsersService {
     return skills;
   }
 
-  async addUserSkill(userId, skillName) {
+  async addUserSkill(userId, value) {
     const skill = await this.skillsRepository.findOne({
       select: ['id'],
-      where: { name: skillName },
+      where: { value },
     });
     // 조인 테이블에 추가
     await getConnection()
@@ -103,10 +103,10 @@ export class UsersService {
     return this.getUserSkills(userId);
   }
 
-  async deleteUserSkill(userId, skillName) {
+  async deleteUserSkill(userId, value) {
     const skill = await this.skillsRepository.findOne({
       select: ['id'],
-      where: { name: skillName },
+      where: { value },
     });
     // 조인 테이블에서 삭제
     await getConnection()

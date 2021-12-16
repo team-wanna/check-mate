@@ -81,9 +81,9 @@ export class ProjectsController {
   addUserSkill(
     @CurrentUser() user,
     @Param('id', ParseIntPipe) projectId: number,
-    @Query('name') skillName: string,
+    @Query('value') value: string,
   ) {
-    return this.projectsService.addProjectSkill(user.id, projectId, skillName);
+    return this.projectsService.addProjectSkill(user.id, projectId, value);
   }
 
   @ApiOperation({ summary: '프로젝트 스킬 삭제하기' })
@@ -93,13 +93,9 @@ export class ProjectsController {
   deleteUserSkill(
     @CurrentUser() user,
     @Param('id', ParseIntPipe) projectId: number,
-    @Query('name') skillName: string,
+    @Query('value') value: string,
   ) {
-    return this.projectsService.deleteProjectSkill(
-      user.id,
-      projectId,
-      skillName,
-    );
+    return this.projectsService.deleteProjectSkill(user.id, projectId, value);
   }
 
   @ApiOperation({ summary: '프로젝트 로고 이미지 변경하기' })

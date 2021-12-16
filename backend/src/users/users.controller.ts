@@ -55,16 +55,16 @@ export class UsersController {
   @ApiResponseDto(Skill)
   @UseGuards(JwtAuthGuard)
   @Post('me/skills')
-  addUserSkill(@CurrentUser() user, @Query('name') skillName: string) {
-    return this.usersService.addUserSkill(user.id, skillName);
+  addUserSkill(@CurrentUser() user, @Query('value') value: string) {
+    return this.usersService.addUserSkill(user.id, value);
   }
 
   @ApiOperation({ summary: '유저 스킬 삭제하기' })
   @ApiResponseDto(Skill)
   @UseGuards(JwtAuthGuard)
   @Delete('me/skills')
-  deleteUserSkill(@CurrentUser() user, @Query('name') name: string) {
-    return this.usersService.deleteUserSkill(user.id, name);
+  deleteUserSkill(@CurrentUser() user, @Query('value') value: string) {
+    return this.usersService.deleteUserSkill(user.id, value);
   }
 
   @ApiOperation({ summary: '프로필 이미지 변경하기' })

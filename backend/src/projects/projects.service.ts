@@ -96,8 +96,8 @@ export class ProjectsService {
     await this.projectsRepository.softDelete(projectId);
   }
 
-  private async getProjectSkills(projectId) {
-    const skills = await getConnection()
+  private getProjectSkills(projectId) {
+    const skills = getConnection()
       .createQueryBuilder()
       .relation(Project, 'skills')
       .of(projectId)
@@ -105,13 +105,13 @@ export class ProjectsService {
     return skills;
   }
 
-  async addProjectSkill(userId, projectId, skillName) {
+  async addProjectSkill(userId, projectId, value) {
     const project = await this.getProject(projectId);
     if (userId !== project[0].ownerId) {
       throw new ForbiddenException('작성자만 변경할 수 있습니다.');
     }
     const skill = await this.skillsRepository.findOne({
-      where: { name: skillName },
+      where: { value },
     });
     // 조인 테이블에 추가
     await getConnection()
@@ -122,13 +122,13 @@ export class ProjectsService {
     return this.getProjectSkills(projectId);
   }
 
-  async deleteProjectSkill(userId, projectId, skillName) {
+  async deleteProjectSkill(userId, projectId, value) {
     const project = await this.getProject(projectId);
     if (userId !== project[0].ownerId) {
       throw new ForbiddenException('작성자만 변경할 수 있습니다.');
     }
     const skill = await this.skillsRepository.findOne({
-      where: { name: skillName },
+      where: { value },
     });
     // 조인 테이블에서 삭제
     await getConnection()
