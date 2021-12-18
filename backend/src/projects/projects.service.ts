@@ -139,7 +139,7 @@ export class ProjectsService {
     return this.getProjectSkills(projectId);
   }
 
-  private async deleteBeforeLogoImage(logoImageUrl) {
+  private async deleteSavedLogoImage(logoImageUrl) {
     if (logoImageUrl) {
       const key = logoImageUrl.split(
         `https://${process.env.AWS_S3_BUCKET_NAME}.s3.amazonaws.com/`,
@@ -153,7 +153,7 @@ export class ProjectsService {
     if (userId !== project[0].ownerId) {
       throw new ForbiddenException('작성자만 변경할 수 있습니다.');
     }
-    await this.deleteBeforeLogoImage(project[0].logoImageUrl);
+    await this.deleteSavedLogoImage(project[0].logoImageUrl);
     const s3Object = await this.awsService.uploadFileToS3(
       'projects',
       logoImageFile,
@@ -170,7 +170,7 @@ export class ProjectsService {
     if (userId !== project[0].ownerId) {
       throw new ForbiddenException('작성자만 변경할 수 있습니다.');
     }
-    await this.deleteBeforeLogoImage(project[0].logoImageUrl);
+    await this.deleteSavedLogoImage(project[0].logoImageUrl);
     await this.projectsRepository.update(projectId, {
       logoImageUrl: null,
     });

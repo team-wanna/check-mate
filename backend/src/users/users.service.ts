@@ -76,6 +76,8 @@ export class UsersService {
   }
 
   async deleteUser(userId) {
+    const user = await this.getUser(userId);
+    await this.deleteSavedProfileImage(user[0].profileImageUrl);
     await this.usersRepository.softDelete(userId);
     return;
   }
@@ -117,18 +119,18 @@ export class UsersService {
     return this.getUserSkills(userId);
   }
 
-  private async deleteBeforeProfileImage(profileImageUrl) {
+  private async deleteSavedProfileImage(profileImageUrl) {
     const key = profileImageUrl.split(
       `https://${process.env.AWS_S3_BUCKET_NAME}.s3.amazonaws.com/`,
     )[1];
-    if (key !== 'users/boy.png' && key !== 'users/girl.png') {
+    if (key && key !== 'users/boy.png' && key !== 'users/girl.png') {
       await this.awsService.deleteS3Object(key);
     }
   }
 
   async uploadProfileImage(user, profileImageFile: Express.Multer.File) {
     const { id: userId, profileImageUrl } = user;
-    await this.deleteBeforeProfileImage(profileImageUrl);
+    await this.deleteSavedProfileImage(profileImageUrl);
     const s3Object = await this.awsService.uploadFileToS3(
       'users',
       profileImageFile,
@@ -142,7 +144,7 @@ export class UsersService {
 
   async initProfileImage(user, select) {
     const { id: userId, profileImageUrl } = user;
-    await this.deleteBeforeProfileImage(profileImageUrl);
+    await this.deleteSavedProfileImage(profileImageUrl);
     await this.usersRepository.update(userId, {
       profileImageUrl: `https://${process.env.AWS_S3_BUCKET_NAME}.s3.amazonaws.com/users/${select}.png`,
     });
