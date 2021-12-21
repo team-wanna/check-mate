@@ -32,8 +32,11 @@ export class ProjectsController {
   @ApiOperation({ summary: '모든 프로젝트 가져오기' })
   @ApiResponseDto(ProjectThumbnailDto)
   @Get()
-  getAllProjects() {
-    return this.projectsService.getAllProjects();
+  getAllProjects(
+    @Query('locations') locations: string[],
+    @Query('skills') skills: string[],
+  ) {
+    return this.projectsService.getAllProjects(locations, skills);
   }
 
   @ApiOperation({ summary: '프로젝트 생성하기' })
