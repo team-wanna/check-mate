@@ -1,7 +1,8 @@
 import api from '@/api';
 import { CommonResponse, SocialType } from '@/utils/define';
+import { Skill } from '@/api/modules/skill';
 
-interface GetProfileRes {
+export interface GetProfileRes {
   id: number;
   provider: SocialType;
   subId: string;
@@ -11,6 +12,8 @@ interface GetProfileRes {
   createdAt: string;
   updatedAt: string;
   deletedAt?: string;
+  email: string;
+  skills: Skill[];
 }
 
 export const getProfile = (): CommonResponse<GetProfileRes> =>
@@ -40,3 +43,9 @@ export const editProfileImage = (
   data: FormData,
 ): CommonResponse<EditProfileImageRes> =>
   api.apiInstance.post('/users/me/upload', data);
+
+export const createUserSkill = (value: string): CommonResponse<Skill> =>
+  api.apiInstance.post(`/users/me/skills?value=${value}`);
+
+export const deleteUserSkill = (value: string): CommonResponse<Skill> =>
+  api.apiInstance.delete(`/users/me/skills?value=${value}`);

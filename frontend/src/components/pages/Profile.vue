@@ -33,14 +33,14 @@
           <div class="profile-item-box profile-item--info">
             <div class="info-item-box">
               <label class="info-title">📛이름</label>
-              <input type="text" v-model="nameValue" class="info-content" />
+              <input type="text" v-model="profile.name" class="info-content" />
             </div>
             <div class="info-item-box">
               <label class="info-title">🤗소개</label>
               <textarea
                 class="info-content info-content--intro"
                 placeholder="나를 소개해봐요!"
-                v-model="introValue"
+                v-model="profile.intro"
               >
               </textarea>
             </div>
@@ -55,11 +55,7 @@
           <div class="profile-item-box profile-item--info">
             <div class="info-item-box">
               <label class="info-title">📧이메일</label>
-              <input
-                type="text"
-                value="devwani93@gmail.com"
-                class="info-content"
-              />
+              <input type="text" :value="profile.email" class="info-content" />
             </div>
 
             <div class="info-item-box">
@@ -68,6 +64,33 @@
                 type="search"
                 placeholder="기술스택을 검색하세요!"
                 class="info-content"
+                @input="searchSkill"
+                @focusout="onFocusoutSkillInput"
+                @keydown.down.prevent="onKeydownSkillInput"
+                @keydown.up.prevent="onKeyupSkillInput"
+                @keydown.enter="selectSkill"
+                ref="skillInputRef"
+              />
+              <ul v-if="searchedSkillData.length" class="skill-list">
+                <li
+                  v-for="(skillData, idx) in searchedSkillData"
+                  :key="idx"
+                  class="skill-list__content"
+                  @mouseover="onMouseoverSkill(idx)"
+                  @mousedown="selectSkill"
+                  :class="{
+                    'skill-list__content--focus': currentSkill === idx,
+                  }"
+                >
+                  {{ skillData.name }}
+                </li>
+              </ul>
+
+              <skill-item
+                v-for="(skill, idx) in profile.skills"
+                :key="skill.id"
+                :skill-info="skill"
+                @delete-btn="deleteSkill(idx)"
               />
             </div>
           </div>
@@ -94,7 +117,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from 'vue';
+import { defineComponent, onMounted, reactive, ref } from 'vue';
 import { useStore } from 'vuex';
 import BaseLayout from '@/components/templates/BaseLayout.vue';
 import {
@@ -102,23 +125,113 @@ import {
   editProfile,
   editProfileImage,
   getProfile,
+  createUserSkill,
+  GetProfileRes,
+  deleteUserSkill,
 } from '@/api/modules/user';
 import useToast from '@/composables/toast';
+import { getSkillsAPI, Skill } from '@/api/modules/skill';
+import SkillItem from '@/components/UI/atoms/SkillItem.vue';
 
 export default defineComponent({
   name: 'Profile',
-  components: { BaseLayout },
+  components: { SkillItem, BaseLayout },
   setup() {
     const store = useStore();
     const { triggerToast } = useToast();
     const profilePicture = ref(store.getters['user/getProfileImageUrl']);
     const profileData = new FormData();
-    const nameValue = ref<string | undefined>('');
-    const introValue = ref<string | undefined>('');
+    const profile = reactive<GetProfileRes>({
+      name: '',
+      intro: '',
+      email: '',
+      id: -1,
+      createdAt: '',
+      profileImageUrl: '',
+      provider: '',
+      subId: '',
+      updatedAt: '',
+      skills: [],
+    });
+    const skillInputRef = ref();
+    const searchedSkillData = ref<Skill[]>([]);
+    const currentSkill = ref<number>(-1);
+    const registeredSkills = ref<Skill[]>([]);
+    let searchSkillTimeout = -1;
+
+    const searchSkill = (event: any) => {
+      clearTimeout(searchSkillTimeout);
+      searchSkillTimeout = setTimeout(async () => {
+        const { data } = await getSkillsAPI(event.target.value);
+
+        searchedSkillData.value = data.data.length
+          ? data.data
+          : [
+              {
+                id: -1,
+                name: '검색 결과가 없습니다. 영어로 검색해 주세요!',
+                value: 'noSkillData',
+              },
+            ];
+        currentSkill.value = 0;
+      }, 300);
+    };
+    const selectSkill = async () => {
+      try {
+        const targetSkill = searchedSkillData.value[currentSkill.value];
+
+        if (targetSkill.id === -1) {
+          return;
+        }
+        const { data } = await createUserSkill(targetSkill.value);
+        if (data.success) {
+          await triggerToast(
+            `${targetSkill.name} 스킬이 등록 되었습니다.`,
+            'success',
+          );
+          profile.skills.push(targetSkill);
+        } else {
+          await triggerToast(
+            `${targetSkill.name} 스킬 등록을 실패했습니다.`,
+            'danger',
+          );
+        }
+      } catch (error) {
+        console.error(error);
+        await triggerToast(error, 'danger');
+      } finally {
+        searchedSkillData.value = [];
+        skillInputRef.value.value = '';
+        skillInputRef.value.blur();
+      }
+    };
+    const deleteSkill = async (idx: number) => {
+      try {
+        const targetSkill = profile.skills[idx];
+
+        const { data } = await deleteUserSkill(targetSkill.value);
+        if (data.success) {
+          await triggerToast(
+            `${targetSkill.name} 스킬이 삭제 되었습니다.`,
+            'success',
+          );
+          profile.skills.splice(idx, 1);
+        } else {
+          await triggerToast(
+            `${targetSkill.name} 스킬 삭제를 실패했습니다.`,
+            'danger',
+          );
+        }
+      } catch (error) {
+        console.error(error);
+        await triggerToast(error, 'danger');
+      }
+    };
 
     const loadFile = (event: any) => {
       const { target } = event;
       const file = target?.files[0];
+
       profileData.append('profileImageFile', file);
       profilePicture.value = URL.createObjectURL(file);
     };
@@ -138,8 +251,8 @@ export default defineComponent({
     };
     const clickBaseProfileSaveBtn = async () => {
       const data: EditProfileReq = {
-        name: nameValue.value,
-        intro: introValue.value,
+        name: profile.name,
+        intro: profile.intro,
       };
       try {
         await editProfile(data);
@@ -150,12 +263,31 @@ export default defineComponent({
       }
     };
 
+    const onMouseoverSkill = (idx: number) => {
+      currentSkill.value = idx;
+    };
+    const onFocusoutSkillInput = () => {
+      searchedSkillData.value = [];
+    };
+    const onKeydownSkillInput = () => {
+      currentSkill.value += 1;
+      currentSkill.value %= searchedSkillData.value.length;
+    };
+    const onKeyupSkillInput = () => {
+      currentSkill.value -= 1;
+      if (currentSkill.value < 0) {
+        currentSkill.value = searchedSkillData.value.length - 1;
+      }
+    };
+
     onMounted(async () => {
       const { data } = await getProfile();
-      const { name, intro } = data.data[0];
+      const { name, intro, email, skills } = data.data[0];
 
-      nameValue.value = name;
-      introValue.value = intro;
+      profile.name = name || '';
+      profile.intro = intro || '';
+      profile.email = email || '';
+      profile.skills = skills || [];
 
       store.commit('user/setName', name);
       store.commit('user/setIntro', intro);
@@ -163,11 +295,21 @@ export default defineComponent({
 
     return {
       profilePicture,
-      nameValue,
-      introValue,
+      profile,
+      skillInputRef,
+      searchedSkillData,
+      currentSkill,
+      registeredSkills,
       loadFile,
       clickProfileImageSaveBtn,
       clickBaseProfileSaveBtn,
+      searchSkill,
+      selectSkill,
+      deleteSkill,
+      onMouseoverSkill,
+      onFocusoutSkillInput,
+      onKeydownSkillInput,
+      onKeyupSkillInput,
     };
   },
 });
@@ -225,27 +367,29 @@ export default defineComponent({
   }
   .profile-item--info {
     .info-item-box {
-      display: flex;
-      flex-direction: column;
       padding: 20px;
       .info-title {
+        display: block;
         font-size: $--font-size-medium;
         margin-bottom: 10px;
       }
       .info-content {
+        display: block;
         width: 440px;
-        height: 40px;
+        min-height: 40px;
         padding-left: 8px;
         border: 2px solid $--color-border;
         border-radius: 5px;
+        box-sizing: content-box;
         font-family: BMHANNAPro, serif;
         font-size: $--font-size-small;
+        &:focus {
+          border-color: $--color-primary;
+          box-shadow: 0 0 0 1px $--color-primary;
+          outline: none;
+        }
       }
-      .info-content:focus {
-        border-color: $--color-primary;
-        box-shadow: 0 0 0 1px $--color-primary;
-        outline: none;
-      }
+
       .info-content--intro {
         height: 100px;
         padding: 8px;
@@ -271,5 +415,24 @@ export default defineComponent({
 }
 .is-empty {
   font-size: $--font-size-small;
+}
+.skill-list {
+  position: absolute;
+  width: 448px;
+  max-height: 200px;
+  overflow-y: auto;
+  border: 2px solid $--color-border;
+  border-radius: 5px;
+  box-sizing: content-box;
+  &__content {
+    margin: 1px;
+    height: 40px;
+    padding-left: 8px;
+    line-height: 40px;
+    background-color: #ffffff;
+    &--focus {
+      background-color: $--color-primary;
+    }
+  }
 }
 </style>

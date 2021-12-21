@@ -7,9 +7,7 @@
         class="toast"
         :class="`toast--${toast.type}`"
       >
-        <span class="toast-content">
-          {{ toast.message }}
-        </span>
+        {{ toast.message }}
       </div>
     </transition-group>
   </div>
@@ -40,17 +38,15 @@ export default defineComponent({
   transform: translateX(-50%);
 }
 .toast {
-  width: 300px;
   height: 50px;
-  border-radius: 30px;
+  padding: 0 10px;
+  border-radius: 10px;
   display: flex;
   justify-content: center;
   align-items: center;
   margin-bottom: 10px;
-  &-content {
-    font-size: $--font-size-medium;
-    color: #ffffff;
-  }
+  font-size: $--font-size-medium;
+  color: #ffffff;
 }
 .toast--success {
   background-color: $--color-success;
