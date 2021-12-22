@@ -6,7 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { AwsService } from 'src/aws/aws.service';
 import { Skill } from 'src/entities/skills.entity';
-import { getConnection, Repository } from 'typeorm';
+import { Brackets, getConnection, getRepository, Repository } from 'typeorm';
 import { Project } from '../entities/projects.entity';
 
 @Injectable()
@@ -19,21 +19,34 @@ export class ProjectsService {
     private readonly awsService: AwsService,
   ) {}
 
-  async getAllProjects() {
-    const projects = await this.projectsRepository.find({
-      //TODO: 필터링 적용
-      select: [
-        'id',
-        'title',
-        'logoImageUrl',
-        'intro',
-        'location',
-        'isClosed',
-        'createdAt',
-        'updatedAt',
-      ],
-      order: { applicantCount: 'DESC' },
-    });
+  async getAllProjects(page, pageSize, locations, skills) {
+    page = page ? (page <= 0 ? 1 : page) : 1;
+    pageSize = pageSize ? (pageSize <= 0 ? 15 : page) : 15;
+    const offset = (page - 1) * pageSize;
+    const projects = await getConnection()
+      .createQueryBuilder(Project, 'project')
+      .select([
+        'project.id',
+        'project.title',
+        'project.logoImageUrl',
+        'project.intro',
+        'project.location',
+        'project.isClosed',
+        'project.createdAt',
+        'project.updatedAt',
+      ])
+      .leftJoinAndSelect('project.skills', 'skill')
+      .where(
+        `TRUE ${locations ? 'AND project.location IN (:locations)' : ''}`,
+        { locations },
+      )
+      .andWhere(`TRUE ${skills ? 'AND skill.value IN (:skills)' : ''}`, {
+        skills,
+      })
+      .limit(pageSize)
+      .offset(offset)
+      .orderBy('project.createdAt', 'DESC')
+      .getMany();
     return await Promise.all(
       projects.map(async (project) => {
         return {
@@ -96,8 +109,8 @@ export class ProjectsService {
     await this.projectsRepository.softDelete(projectId);
   }
 
-  private getProjectSkills(projectId) {
-    const skills = getConnection()
+  private async getProjectSkills(projectId) {
+    const skills = await getConnection()
       .createQueryBuilder()
       .relation(Project, 'skills')
       .of(projectId)

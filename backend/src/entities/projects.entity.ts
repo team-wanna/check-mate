@@ -69,7 +69,7 @@ export class Project extends BaseEntity {
 
   @ApiProperty({
     description: '프로젝트 진행 지역',
-    example: '온라인',
+    example: 'online',
   })
   @IsNotEmpty()
   @IsString()
