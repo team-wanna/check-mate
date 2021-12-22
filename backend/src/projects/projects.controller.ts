@@ -33,10 +33,17 @@ export class ProjectsController {
   @ApiResponseDto(ProjectThumbnailDto)
   @Get()
   getAllProjects(
+    @Query('page') page: string,
+    @Query('pageSize') pageSize: string,
     @Query('locations') locations: string[],
     @Query('skills') skills: string[],
   ) {
-    return this.projectsService.getAllProjects(locations, skills);
+    return this.projectsService.getAllProjects(
+      page,
+      pageSize,
+      locations,
+      skills,
+    );
   }
 
   @ApiOperation({ summary: '프로젝트 생성하기' })
