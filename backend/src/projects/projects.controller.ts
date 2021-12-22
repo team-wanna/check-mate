@@ -14,7 +14,12 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiOkResponse,
+  ApiOperation,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { ApiResponseDto } from 'src/common/decorators/api-response-dto.decorator';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
@@ -31,12 +36,30 @@ export class ProjectsController {
 
   @ApiOperation({ summary: '모든 프로젝트 가져오기' })
   @ApiResponseDto(ProjectThumbnailDto)
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    description: '현재 페이지, 비어있을 경우 기본값 1',
+  })
+  @ApiQuery({
+    name: 'pageSize',
+    required: false,
+    description: '가져올 프로젝트 카드 정보 개수, 비어있을 경우 기본값 15',
+  })
+  @ApiQuery({
+    name: 'locations',
+    required: false,
+  })
+  @ApiQuery({
+    name: 'skills',
+    required: false,
+  })
   @Get()
   getAllProjects(
-    @Query('page') page: string,
-    @Query('pageSize') pageSize: string,
-    @Query('locations') locations: string[],
-    @Query('skills') skills: string[],
+    @Query('page') page?: string,
+    @Query('pageSize') pageSize?: string,
+    @Query('locations') locations?: string[],
+    @Query('skills') skills?: string[],
   ) {
     return this.projectsService.getAllProjects(
       page,
