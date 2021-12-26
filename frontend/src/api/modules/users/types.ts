@@ -1,4 +1,4 @@
-import { Skill } from '@/api/modules/skill';
+import { Index } from '@/api/modules/skills';
 
 interface ProfileRes {
   id: number;
@@ -8,7 +8,7 @@ interface ProfileRes {
   email: string;
   createdAt: string;
   updatedAt: string;
-  skills: Skill[];
+  skills: Index[];
 }
 interface EditProfileReq {
   name?: string;

@@ -10,13 +10,13 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
 import { skillColorMap } from '@/common/Utils';
-import { Skill } from '@/api/modules/skill';
+import { SkillRes } from '@/api/modules/skills/types';
 
 export default defineComponent({
   name: 'SkillItem',
   props: {
     skillInfo: {
-      type: Object as PropType<Skill>,
+      type: Object as PropType<SkillRes>,
       required: true,
     },
   },

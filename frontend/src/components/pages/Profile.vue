@@ -128,9 +128,10 @@ import {
   deleteUserSkill,
 } from '@/api/modules/users';
 import useToast from '@/composables/toast';
-import { getSkillsAPI, Skill } from '@/api/modules/skill';
+import { getSkillsAPI } from '@/api/modules/skills';
 import SkillItem from '@/components/UI/atoms/SkillItem.vue';
 import { EditProfileReq, ProfileRes } from '@/api/modules/users/types';
+import { SkillRes } from '@/api/modules/skills/types';
 
 export default defineComponent({
   name: 'Profile',
@@ -151,9 +152,9 @@ export default defineComponent({
       skills: [],
     });
     const skillInputRef = ref();
-    const searchedSkillData = ref<Skill[]>([]);
+    const searchedSkillData = ref<SkillRes[]>([]);
     const currentSkill = ref<number>(-1);
-    const registeredSkills = ref<Skill[]>([]);
+    const registeredSkills = ref<SkillRes[]>([]);
     let searchSkillTimeout = -1;
 
     const searchSkill = (event: any) => {
