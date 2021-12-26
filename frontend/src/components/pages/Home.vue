@@ -9,7 +9,7 @@ import { useStore } from 'vuex';
 import BaseLayout from '@/components/templates/BaseLayout.vue';
 import SignInModal from '@/components/pages/SignInModal.vue';
 import api from '@/api';
-import { getProfile } from '@/api/modules/user';
+import { getProfile } from '@/api/modules/users';
 
 export default defineComponent({
   name: 'Home',

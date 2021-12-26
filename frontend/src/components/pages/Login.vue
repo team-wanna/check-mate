@@ -8,11 +8,12 @@ import { loginAPI } from '@/api/modules/auth';
 import router from '@/router';
 import api from '@/api';
 import { SocialType } from '@/utils/define';
+import { LoginReq } from '@/api/modules/auth/types';
 
 export default defineComponent({
   name: 'GoogleLogin',
   setup() {
-    const url: URL = new URL(window.location.href);
+    const url = new URL(window.location.href);
 
     const login = async (_url: URL) => {
       const code = _url.searchParams.get('code');
@@ -22,7 +23,11 @@ export default defineComponent({
           const loginType = window.sessionStorage.getItem(
             'loginType',
           ) as SocialType;
-          const { data } = await loginAPI(loginType, code);
+          const loginReq: LoginReq = {
+            type: loginType,
+            code,
+          };
+          const { data } = await loginAPI(loginReq);
           const { token, name, profileImageUrl } = data.data[0];
 
           window.sessionStorage.setItem('token', token);

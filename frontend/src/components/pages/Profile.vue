@@ -9,7 +9,7 @@
           <p class="profile-item--title">프로필</p>
           <div class="profile-item-box profile-item--picture">
             <div class="profile-picture">
-              <img :src="profilePicture" />
+              <img :src="profilePicture" alt="Profile Image"/>
             </div>
             <form method="post" enctype="multipart/form-data">
               <label class="profile-picture-label" for="picture">
@@ -121,17 +121,17 @@ import { defineComponent, onMounted, reactive, ref } from 'vue';
 import { useStore } from 'vuex';
 import BaseLayout from '@/components/templates/BaseLayout.vue';
 import {
-  EditProfileReq,
   editProfile,
   editProfileImage,
   getProfile,
   createUserSkill,
-  GetProfileRes,
   deleteUserSkill,
-} from '@/api/modules/user';
+} from '@/api/modules/users';
 import useToast from '@/composables/toast';
-import { getSkillsAPI, Skill } from '@/api/modules/skill';
+import { getSkillsAPI } from '@/api/modules/skills';
 import SkillItem from '@/components/UI/atoms/SkillItem.vue';
+import { EditProfileReq, ProfileRes } from '@/api/modules/users/types';
+import { SkillRes } from '@/api/modules/skills/types';
 
 export default defineComponent({
   name: 'Profile',
@@ -141,22 +141,20 @@ export default defineComponent({
     const { triggerToast } = useToast();
     const profilePicture = ref(store.getters['user/getProfileImageUrl']);
     const profileData = new FormData();
-    const profile = reactive<GetProfileRes>({
+    const profile = reactive<ProfileRes>({
       name: '',
       intro: '',
       email: '',
       id: -1,
       createdAt: '',
       profileImageUrl: '',
-      provider: '',
-      subId: '',
       updatedAt: '',
       skills: [],
     });
     const skillInputRef = ref();
-    const searchedSkillData = ref<Skill[]>([]);
+    const searchedSkillData = ref<SkillRes[]>([]);
     const currentSkill = ref<number>(-1);
-    const registeredSkills = ref<Skill[]>([]);
+    const registeredSkills = ref<SkillRes[]>([]);
     let searchSkillTimeout = -1;
 
     const searchSkill = (event: any) => {
