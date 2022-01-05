@@ -6,6 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { AwsService } from 'src/aws/aws.service';
 import { Skill } from 'src/entities/skills.entity';
+import { User } from 'src/entities/users.entity';
 import { Brackets, getConnection, getRepository, Repository } from 'typeorm';
 import { Project } from '../entities/projects.entity';
 
@@ -47,7 +48,7 @@ export class ProjectsService {
       .offset(offset)
       .orderBy('project.createdAt', 'DESC')
       .getMany();
-    return await Promise.all(
+    return Promise.all(
       projects.map(async (project) => {
         return {
           ...project,
@@ -150,6 +151,37 @@ export class ProjectsService {
       .of(projectId)
       .remove(skill.id);
     return this.getProjectSkills(projectId);
+  }
+
+  async getStaredProject(userId) {
+    const projects = await getConnection()
+      .createQueryBuilder()
+      .relation(User, 'stars')
+      .of(userId)
+      .loadMany();
+    return projects.map(({ id, title, logoImageUrl }) => {
+      return { id, title, logoImageUrl };
+    });
+  }
+
+  async starsProject(userId, projectId) {
+    // 조인 테이블에 추가
+    await getConnection()
+      .createQueryBuilder()
+      .relation(User, 'stars')
+      .of(userId)
+      .add(projectId);
+    return this.getStaredProject(userId);
+  }
+
+  async unstarsProject(userId, projectId) {
+    // 조인 테이블에서 삭제
+    await getConnection()
+      .createQueryBuilder()
+      .relation(User, 'stars')
+      .of(userId)
+      .remove(projectId);
+    return this.getStaredProject(userId);
   }
 
   private async deleteSavedLogoImage(logoImageUrl) {

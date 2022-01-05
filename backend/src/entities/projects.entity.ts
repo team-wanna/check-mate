@@ -12,6 +12,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Skill } from './skills.entity';
+import { User } from './users.entity';
 
 @Entity()
 export class Project extends BaseEntity {
@@ -136,4 +137,7 @@ export class Project extends BaseEntity {
     example: '[{"id": 12, "name": "TypeScript"}]',
   })
   skills: Skill[];
+
+  @ManyToMany(() => User, (users) => users.stars)
+  users: User[];
 }
