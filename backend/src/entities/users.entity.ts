@@ -112,7 +112,6 @@ export class User extends BaseEntity {
   })
   @ApiProperty({
     description: '스킬',
-    example: '[{"id": 12, "name": "TypeScript"}]',
   })
   skills: Skill[];
 
@@ -124,7 +123,6 @@ export class User extends BaseEntity {
   })
   @ApiProperty({
     description: '즐겨찾기에 등록한 프로젝트',
-    example: '[{"id": 1, "logoImageUrl": null}]',
   })
   stars: Project[];
 }

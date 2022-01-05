@@ -1,3 +1,4 @@
+import { StaredProjectDto } from './dto/stared-project.dto';
 import { Skill } from 'src/entities/skills.entity';
 import {
   Body,
@@ -132,6 +133,7 @@ export class ProjectsController {
   }
 
   @ApiOperation({ summary: '프로젝트 즐겨찾기 등록하기' })
+  @ApiResponseDto(StaredProjectDto)
   @UseGuards(JwtAuthGuard)
   @Post(':id/stars')
   starsProject(
@@ -142,6 +144,7 @@ export class ProjectsController {
   }
 
   @ApiOperation({ summary: '프로젝트 즐겨찾기 해제하기' })
+  @ApiResponseDto(StaredProjectDto)
   @UseGuards(JwtAuthGuard)
   @Delete(':id/stars')
   unstarsProject(
