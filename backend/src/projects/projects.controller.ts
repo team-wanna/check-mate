@@ -111,7 +111,7 @@ export class ProjectsController {
   @ApiResponseDto(Skill)
   @UseGuards(JwtAuthGuard)
   @Post(':id/skills')
-  addUserSkill(
+  addProjectSkill(
     @CurrentUser() user,
     @Param('id', ParseIntPipe) projectId: number,
     @Query('value') value: string,
@@ -123,12 +123,32 @@ export class ProjectsController {
   @ApiResponseDto(Skill)
   @UseGuards(JwtAuthGuard)
   @Delete(':id/skills')
-  deleteUserSkill(
+  deleteProjectSkill(
     @CurrentUser() user,
     @Param('id', ParseIntPipe) projectId: number,
     @Query('value') value: string,
   ) {
     return this.projectsService.deleteProjectSkill(user.id, projectId, value);
+  }
+
+  @ApiOperation({ summary: '프로젝트 즐겨찾기 등록하기' })
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/stars')
+  starsProject(
+    @CurrentUser() user,
+    @Param('id', ParseIntPipe) projectId: number,
+  ) {
+    return this.projectsService.starsProject(user.id, projectId);
+  }
+
+  @ApiOperation({ summary: '프로젝트 즐겨찾기 해제하기' })
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id/stars')
+  unstarsProject(
+    @CurrentUser() user,
+    @Param('id', ParseIntPipe) projectId: number,
+  ) {
+    return this.projectsService.unstarsProject(user.id, projectId);
   }
 
   @ApiOperation({ summary: '프로젝트 로고 이미지 변경하기' })
