@@ -11,6 +11,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Project } from './projects.entity';
 import { Skill } from './skills.entity';
 
 @Entity()
@@ -114,4 +115,16 @@ export class User extends BaseEntity {
     example: '[{"id": 12, "name": "TypeScript"}]',
   })
   skills: Skill[];
+
+  @ManyToMany(() => Project, (projects) => projects.users)
+  @JoinTable({
+    name: 'star',
+    joinColumn: { name: 'user_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'project_id', referencedColumnName: 'id' },
+  })
+  @ApiProperty({
+    description: '즐겨찾기에 등록한 프로젝트',
+    example: '[{"id": 1, "logoImageUrl": null}]',
+  })
+  stars: Project[];
 }
