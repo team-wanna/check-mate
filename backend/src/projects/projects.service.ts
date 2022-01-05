@@ -47,7 +47,7 @@ export class ProjectsService {
       .offset(offset)
       .orderBy('project.createdAt', 'DESC')
       .getMany();
-    return await Promise.all(
+    return Promise.all(
       projects.map(async (project) => {
         return {
           ...project,

@@ -82,8 +82,8 @@ export class UsersService {
     return;
   }
 
-  private getUserSkills(userId) {
-    const skills = getConnection()
+  private async getUserSkills(userId) {
+    const skills = await getConnection()
       .createQueryBuilder()
       .relation(User, 'skills')
       .of(userId)
