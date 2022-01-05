@@ -7,6 +7,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { AwsService } from 'src/aws/aws.service';
 import { Skill } from 'src/entities/skills.entity';
+import { ProjectsService } from 'src/projects/projects.service';
 import { getConnection, Repository } from 'typeorm';
 import { User } from '../entities/users.entity';
 
@@ -17,6 +18,7 @@ export class UsersService {
     @InjectRepository(Skill)
     private readonly skillsRepository: Repository<Skill>,
     private readonly awsService: AwsService,
+    private readonly projectsService: ProjectsService,
   ) {}
 
   private async getUser(userId) {
@@ -35,7 +37,8 @@ export class UsersService {
       throw new NotFoundException();
     }
     const skills = await this.getUserSkills(userId);
-    return [{ ...user, skills }];
+    const stars = await this.projectsService.getStaredProject(userId);
+    return [{ ...user, skills, stars }];
   }
 
   async getCurrentUser(userId: number) {

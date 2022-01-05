@@ -153,7 +153,7 @@ export class ProjectsService {
     return this.getProjectSkills(projectId);
   }
 
-  private async getStaredProject(userId) {
+  async getStaredProject(userId) {
     const projects = await getConnection()
       .createQueryBuilder()
       .relation(User, 'stars')
