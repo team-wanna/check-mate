@@ -140,4 +140,7 @@ export class Project extends BaseEntity {
 
   @ManyToMany(() => User, (users) => users.stars)
   users: User[];
+
+  @ManyToMany(() => User, (users) => users.projects)
+  members: User[];
 }
