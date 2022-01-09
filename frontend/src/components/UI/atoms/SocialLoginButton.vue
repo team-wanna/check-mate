@@ -32,7 +32,7 @@ export default defineComponent({
       props.type === 'google' ? 'google' : `${props.type}-square`;
 
     const clickLoginBtn = () => {
-      window.sessionStorage.setItem('loginType', props.type);
+      window.localStorage.setItem('loginType', props.type);
       window.location.href = `${process.env.VUE_APP_BACKEND_URL}/api/auth/${props.type}`;
     };
 

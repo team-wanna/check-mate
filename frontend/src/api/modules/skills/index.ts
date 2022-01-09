@@ -1,10 +1,11 @@
 import api from '@/api';
 import { CommonResponse } from '@/utils/define';
-import { SkillRes } from '@/api/modules/skills/types';
+import { Skill } from '@/api/modules/skills/types';
 
-const getSkillsAPI = (search: string): CommonResponse<SkillRes> =>
+const getSkillsAPI = (search: string): CommonResponse<Skill> =>
   api.apiInstance.get('/skills', {
     params: { search },
   });
 
+// eslint-disable-next-line import/prefer-default-export
 export { getSkillsAPI };

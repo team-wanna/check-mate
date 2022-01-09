@@ -4,35 +4,35 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, ref } from 'vue';
+import { defineComponent, onMounted, ref } from 'vue';
 import { useStore } from 'vuex';
 import BaseLayout from '@/components/templates/BaseLayout.vue';
 import SignInModal from '@/components/pages/SignInModal.vue';
 import api from '@/api';
-import { getProfile } from '@/api/modules/users';
 
 export default defineComponent({
   name: 'Home',
   components: { SignInModal, BaseLayout },
   setup() {
     const store = useStore();
-    const userState = computed(() => store.getters['user/getUserState']);
     const isShowSignIn = ref(false);
+    const url = new URL(window.location.href);
+    const isSignUp = ref<boolean>(
+      JSON.parse(url.searchParams.get('isSignUp') || 'false'),
+    );
 
     onMounted(async () => {
-      const token = window.sessionStorage.getItem('token');
-      if (userState.value === 'signUp') {
+      if (isSignUp.value) {
         isShowSignIn.value = true;
-      } else if (token) {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        api.apiInstance.defaults.headers.common.Authorization = `Bearer ${token}`;
-        const { data } = await getProfile();
-        const { name, intro, profileImageUrl } = data.data[0];
-        store.commit('user/setName', name);
-        store.commit('user/setIntro', intro);
-        store.commit('user/setProfileImageUrl', profileImageUrl);
-        store.commit('user/setUserState', 'loggedIn');
+      } else {
+        const token = window.sessionStorage.getItem('token');
+
+        if (token) {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          api.apiInstance.defaults.headers.common.Authorization = `Bearer ${token}`;
+          await store.dispatch('user/fetchProfile');
+        }
       }
     });
 
