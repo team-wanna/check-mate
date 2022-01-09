@@ -1,7 +1,8 @@
-interface SkillRes {
+interface Skill {
   id: number;
   name: string;
   value: string;
 }
 
-export { SkillRes };
+// eslint-disable-next-line import/prefer-default-export
+export { Skill };

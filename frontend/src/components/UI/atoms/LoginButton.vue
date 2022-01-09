@@ -1,14 +1,14 @@
 <template>
-  <div class="login-button-container" v-if="userState === 'loggedIn'">
+  <div class="login-button-container" v-if="profile.name">
     <div class="alarm-container">
       <fa class="icon alarm-icon" :icon="['far', 'bell']" />
     </div>
     <div class="profile-container">
       <button @click="clickProfile" @blur="blurProfile">
         <img
-          v-if="profileImage"
+          v-if="profile.profileImageUrl"
           class="profile-icon--custom"
-          :src="profileImage"
+          :src="profile.profileImageUrl"
           alt="profile icon"
         />
         <fa
@@ -45,18 +45,17 @@ import { computed, defineComponent, ref } from 'vue';
 import { useStore } from 'vuex';
 import router from '@/router';
 import LoginModal from '@/components/pages/LoginModal.vue';
+import { Profile } from '@/api/modules/users/types';
 
 export default defineComponent({
   name: 'LoginButton',
   components: { LoginModal },
   setup() {
     const store = useStore();
-    const userState = computed(() => store.getters['user/getUserState']);
     const isShowProfilePopup = ref(false);
-    const profileImage = computed(
-      () => store.getters['user/getProfileImageUrl'],
-    );
     const isShowLoginModal = ref(false);
+    const profile = computed<Profile>(() => store.getters['user/getProfile']);
+
     const blurProfile = () => {
       isShowProfilePopup.value = false;
     };
@@ -77,8 +76,7 @@ export default defineComponent({
     };
 
     return {
-      userState,
-      profileImage,
+      profile,
       isShowLoginModal,
       isShowProfilePopup,
       blurProfile,
@@ -96,34 +94,41 @@ export default defineComponent({
   cursor: pointer;
   font-size: $--font-size-medium;
 }
+
 .login-button-container {
   display: flex;
   align-items: center;
   margin-right: 20px;
+
   .alarm-icon {
     margin-right: 10px;
   }
+
   .profile-icon--common {
     font-size: $--font-size-large;
   }
+
   .profile-icon--custom {
     width: 50px;
     height: 50px;
     border-radius: 30px;
   }
 }
+
 .profile-popup {
   position: absolute;
   width: 200px;
   border: 1px solid $--color-border;
   border-radius: 5px;
   background-color: #ffffff;
+
   &-item {
     cursor: pointer;
     font-size: 16px;
     padding: 10px;
     transition: ease-in background-color;
   }
+
   &-item:hover {
     background-color: $--color-primary;
   }

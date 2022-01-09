@@ -9,7 +9,7 @@
           <p class="profile-item--title">프로필</p>
           <div class="profile-item-box profile-item--picture">
             <div class="profile-picture">
-              <img :src="profilePicture" alt="Profile Image"/>
+              <img :src="profile.profileImageUrl" alt="Profile Image" />
             </div>
             <form method="post" enctype="multipart/form-data">
               <label class="profile-picture-label" for="picture">
@@ -117,44 +117,44 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, reactive, ref } from 'vue';
+import { computed, defineComponent, onMounted, ref } from 'vue';
 import { useStore } from 'vuex';
 import BaseLayout from '@/components/templates/BaseLayout.vue';
 import {
   editProfile,
   editProfileImage,
-  getProfile,
+  getUserProfileAPI,
   createUserSkill,
   deleteUserSkill,
 } from '@/api/modules/users';
 import useToast from '@/composables/toast';
 import { getSkillsAPI } from '@/api/modules/skills';
 import SkillItem from '@/components/UI/atoms/SkillItem.vue';
-import { EditProfileReq, ProfileRes } from '@/api/modules/users/types';
-import { SkillRes } from '@/api/modules/skills/types';
+import { EditProfile, Profile } from '@/api/modules/users/types';
+import { Skill } from '@/api/modules/skills/types';
+import api from '@/api';
 
 export default defineComponent({
   name: 'Profile',
   components: { SkillItem, BaseLayout },
   setup() {
+    // TODO - 새로고침시 토큰 유지를 위해 임시로 token 넣음. 추후 공통함수로 묶어야함.
+    const token = window.sessionStorage.getItem('token');
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    api.apiInstance.defaults.headers.common.Authorization = `Bearer ${token}`;
+
     const store = useStore();
     const { triggerToast } = useToast();
-    const profilePicture = ref(store.getters['user/getProfileImageUrl']);
     const profileData = new FormData();
-    const profile = reactive<ProfileRes>({
-      name: '',
-      intro: '',
-      email: '',
-      id: -1,
-      createdAt: '',
-      profileImageUrl: '',
-      updatedAt: '',
-      skills: [],
+    const profile = computed<Profile>({
+      get: () => store.getters['user/getProfile'],
+      set: (newProfile) => store.commit('user/setProfile', newProfile),
     });
     const skillInputRef = ref();
-    const searchedSkillData = ref<SkillRes[]>([]);
+    const searchedSkillData = ref<Skill[]>([]);
     const currentSkill = ref<number>(-1);
-    const registeredSkills = ref<SkillRes[]>([]);
+    const registeredSkills = ref<Skill[]>([]);
     let searchSkillTimeout = -1;
 
     const searchSkill = (event: any) => {
@@ -187,7 +187,7 @@ export default defineComponent({
             `${targetSkill.name} 스킬이 등록 되었습니다.`,
             'success',
           );
-          profile.skills.push(targetSkill);
+          profile.value.skills.push(targetSkill);
         } else {
           await triggerToast(
             `${targetSkill.name} 스킬 등록을 실패했습니다.`,
@@ -205,7 +205,7 @@ export default defineComponent({
     };
     const deleteSkill = async (idx: number) => {
       try {
-        const targetSkill = profile.skills[idx];
+        const targetSkill = profile.value.skills[idx];
 
         const { data } = await deleteUserSkill(targetSkill.value);
         if (data.success) {
@@ -213,7 +213,7 @@ export default defineComponent({
             `${targetSkill.name} 스킬이 삭제 되었습니다.`,
             'success',
           );
-          profile.skills.splice(idx, 1);
+          profile.value.skills.splice(idx, 1);
         } else {
           await triggerToast(
             `${targetSkill.name} 스킬 삭제를 실패했습니다.`,
@@ -231,7 +231,7 @@ export default defineComponent({
       const file = target?.files[0];
 
       profileData.append('profileImageFile', file);
-      profilePicture.value = URL.createObjectURL(file);
+      profile.value.profileImageUrl = URL.createObjectURL(file);
     };
     const clickProfileImageSaveBtn = async () => {
       try {
@@ -248,9 +248,9 @@ export default defineComponent({
       }
     };
     const clickBaseProfileSaveBtn = async () => {
-      const data: EditProfileReq = {
-        name: profile.name,
-        intro: profile.intro,
+      const data: EditProfile = {
+        name: profile.value.name,
+        intro: profile.value.intro,
       };
       try {
         await editProfile(data);
@@ -279,20 +279,19 @@ export default defineComponent({
     };
 
     onMounted(async () => {
-      const { data } = await getProfile();
+      const { data } = await getUserProfileAPI();
       const { name, intro, email, skills } = data.data[0];
 
-      profile.name = name || '';
-      profile.intro = intro || '';
-      profile.email = email || '';
-      profile.skills = skills || [];
+      profile.value.name = name || '';
+      profile.value.intro = intro || '';
+      profile.value.email = email || '';
+      profile.value.skills = skills || [];
 
       store.commit('user/setName', name);
       store.commit('user/setIntro', intro);
     });
 
     return {
-      profilePicture,
       profile,
       skillInputRef,
       searchedSkillData,
@@ -320,16 +319,19 @@ export default defineComponent({
   font-size: $--font-size-large;
   border-bottom: 2px solid $--color-border;
 }
+
 .profile-container {
   &__content {
     display: flex;
     margin-bottom: 30px;
   }
+
   .profile-item--title {
     width: calc(15% - 20px);
     margin: 10px;
     font-size: $--font-size-medium;
   }
+
   .profile-item-box {
     width: calc(90% - 60px);
     padding: 30px;
@@ -337,17 +339,20 @@ export default defineComponent({
     border-radius: 10px;
     box-shadow: 2px 2px 2px rgb(0 0 0 / 15%);
   }
+
   .profile-item--picture {
     .profile-picture {
       width: 200px;
       height: 200px;
       margin-bottom: 30px;
+
       img {
         width: 100%;
         height: 100%;
         border-radius: 100px;
       }
     }
+
     .profile-picture-label {
       font-size: $--font-size-medium;
       margin-left: 20px;
@@ -357,20 +362,24 @@ export default defineComponent({
       border-radius: 10px;
       transition: color, background-color ease-in 0.1s;
     }
+
     .profile-picture-label:hover {
       color: #ffffff;
       border-color: $--color-primary;
       background-color: $--color-primary;
     }
   }
+
   .profile-item--info {
     .info-item-box {
       padding: 20px;
+
       .info-title {
         display: block;
         font-size: $--font-size-medium;
         margin-bottom: 10px;
       }
+
       .info-content {
         display: block;
         width: 440px;
@@ -381,6 +390,7 @@ export default defineComponent({
         box-sizing: content-box;
         font-family: BMHANNAPro, serif;
         font-size: $--font-size-small;
+
         &:focus {
           border-color: $--color-primary;
           box-shadow: 0 0 0 1px $--color-primary;
@@ -394,10 +404,12 @@ export default defineComponent({
       }
     }
   }
+
   #picture {
     visibility: hidden;
   }
 }
+
 .btn-save {
   float: right;
   font-size: $--font-size-medium;
@@ -408,12 +420,15 @@ export default defineComponent({
   cursor: pointer;
   transition: background-color ease-in 0.1s;
 }
+
 .btn-save:hover {
   background-color: $--color-success;
 }
+
 .is-empty {
   font-size: $--font-size-small;
 }
+
 .skill-list {
   position: absolute;
   width: 448px;
@@ -422,12 +437,14 @@ export default defineComponent({
   border: 2px solid $--color-border;
   border-radius: 5px;
   box-sizing: content-box;
+
   &__content {
     margin: 1px;
     height: 40px;
     padding-left: 8px;
     line-height: 40px;
     background-color: #ffffff;
+
     &--focus {
       background-color: $--color-primary;
     }

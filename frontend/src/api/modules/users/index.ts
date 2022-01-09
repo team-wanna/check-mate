@@ -1,25 +1,25 @@
 import api from '@/api';
 import { CommonResponse } from '@/utils/define';
-import { SkillRes } from '@/api/modules/skills/types';
-import { ProfileRes, EditProfileReq } from '@/api/modules/users/types';
+import { Skill } from '@/api/modules/skills/types';
+import { Profile, EditProfile } from '@/api/modules/users/types';
 
-const getProfile = (): CommonResponse<ProfileRes> =>
+const getUserProfileAPI = (): CommonResponse<Profile> =>
   api.apiInstance.get('/users/me');
 
-const createUserSkill = (value: string): CommonResponse<SkillRes> =>
+const createUserSkill = (value: string): CommonResponse<Skill> =>
   api.apiInstance.post(`/users/me/skills?value=${value}`);
 
-const deleteUserSkill = (value: string): CommonResponse<SkillRes> =>
+const deleteUserSkill = (value: string): CommonResponse<Skill> =>
   api.apiInstance.delete(`/users/me/skills?value=${value}`);
 
-const editProfile = (data: EditProfileReq): CommonResponse<ProfileRes> =>
+const editProfile = (data: EditProfile): CommonResponse<Profile> =>
   api.apiInstance.patch('/users/me', data);
 
-const editProfileImage = (data: FormData): CommonResponse<ProfileRes> =>
+const editProfileImage = (data: FormData): CommonResponse<Profile> =>
   api.apiInstance.post('/users/me/upload', data);
 
 export {
-  getProfile,
+  getUserProfileAPI,
   createUserSkill,
   deleteUserSkill,
   editProfile,

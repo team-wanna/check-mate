@@ -1,18 +1,18 @@
-import { Index } from '@/api/modules/skills';
+import { Skill } from '@/api/modules/skills/types';
 
-interface ProfileRes {
+interface Profile {
   id: number;
-  name?: string; // 비가입자는 name: undefined
+  name: string;
   profileImageUrl: string;
-  intro?: string;
+  intro: string;
   email: string;
   createdAt: string;
   updatedAt: string;
-  skills: Index[];
+  skills: Skill[];
 }
-interface EditProfileReq {
-  name?: string;
-  intro?: string;
+interface EditProfile {
+  name: string;
+  intro: string;
 }
 
-export { ProfileRes, EditProfileReq };
+export { Profile, EditProfile };

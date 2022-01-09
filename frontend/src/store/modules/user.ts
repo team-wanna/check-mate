@@ -1,42 +1,32 @@
 import { Module } from 'vuex';
 import { RootState } from '@/utils/define';
-
-type UserState = 'signUp' | 'loggedIn' | 'loggedOut';
+import { Profile } from '@/api/modules/users/types';
+import { getUserProfileAPI } from '@/api/modules/users';
 
 interface State {
-  userState: UserState;
-  profileImageUrl: string;
-  name: string;
-  intro: string;
+  profile: Profile;
 }
 
 const user: Module<State, RootState> = {
   namespaced: true,
   state: {
-    userState: 'loggedOut',
-    profileImageUrl: '',
-    name: '',
-    intro: '',
+    profile: JSON.parse(window.sessionStorage.getItem('profile') || '{}'),
   },
   mutations: {
-    setUserState: (state: State, userState: UserState) => {
-      state.userState = userState;
+    setProfile: (state: State, profile: Partial<Profile>) => {
+      const newProfile = { ...state.profile, ...profile };
+      window.sessionStorage.setItem('profile', JSON.stringify(newProfile));
+      state.profile = newProfile;
     },
-    setProfileImageUrl: (state: State, profileImageUrl: string) => {
-      state.profileImageUrl = profileImageUrl;
-    },
-    setName: (state: State, name: string) => {
-      state.name = name;
-    },
-    setIntro: (state: State, intro: string) => {
-      state.intro = intro;
+  },
+  actions: {
+    fetchProfile: async ({ commit }) => {
+      const { data } = await getUserProfileAPI();
+      commit('setProfile', data.data[0]);
     },
   },
   getters: {
-    getUserState: (state: State) => state.userState,
-    getProfileImageUrl: (state: State) => state.profileImageUrl,
-    getName: (state: State) => state.name,
-    getIntro: (state: State) => state.intro,
+    getProfile: (state: State) => state.profile,
   },
 };
 
