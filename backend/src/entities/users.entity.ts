@@ -125,4 +125,15 @@ export class User extends BaseEntity {
     description: '즐겨찾기에 등록한 프로젝트',
   })
   stars: Project[];
+
+  @ManyToMany(() => Project, (projects) => projects.members)
+  @JoinTable({
+    name: 'member',
+    joinColumn: { name: 'user_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'project_id', referencedColumnName: 'id' },
+  })
+  @ApiProperty({
+    description: '참여한 프로젝트',
+  })
+  projects: Project[];
 }
