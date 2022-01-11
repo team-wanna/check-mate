@@ -68,7 +68,7 @@ export class ProjectsService {
       description,
       location,
     });
-    // 조인 테이블에 추가
+    // 관계 테이블에 추가
     await getConnection()
       .createQueryBuilder()
       .relation(Project, 'members')
@@ -133,7 +133,7 @@ export class ProjectsService {
     const skill = await this.skillsRepository.findOne({
       where: { value },
     });
-    // 조인 테이블에 추가
+    // 관계 테이블에 추가
     await getConnection()
       .createQueryBuilder()
       .relation(Project, 'skills')
@@ -150,7 +150,7 @@ export class ProjectsService {
     const skill = await this.skillsRepository.findOne({
       where: { value },
     });
-    // 조인 테이블에서 삭제
+    // 관계 테이블에서 삭제
     await getConnection()
       .createQueryBuilder()
       .relation(Project, 'skills')
@@ -209,7 +209,7 @@ export class ProjectsService {
   }
 
   async starsProject(userId, projectId) {
-    // 조인 테이블에 추가
+    // 관계 테이블에 추가
     await getConnection()
       .createQueryBuilder()
       .relation(User, 'stars')
@@ -219,7 +219,7 @@ export class ProjectsService {
   }
 
   async unstarsProject(userId, projectId) {
-    // 조인 테이블에서 삭제
+    // 관계 테이블에서 삭제
     await getConnection()
       .createQueryBuilder()
       .relation(User, 'stars')
@@ -250,7 +250,7 @@ export class ProjectsService {
     const applicantId = 10;
     if (isAccept) {
       //TODO: 응답 알람을 등록한다.
-      // 조인 테이블에 추가
+      // 관계 테이블에 추가
       await getConnection()
         .createQueryBuilder()
         .relation(Project, 'members')
@@ -264,7 +264,7 @@ export class ProjectsService {
   }
 
   async leaveProject(userId, projectId) {
-    // 조인 테이블에서 삭제
+    // 관계 테이블에서 삭제
     await getConnection()
       .createQueryBuilder()
       .relation(Project, 'members')
@@ -278,7 +278,7 @@ export class ProjectsService {
     if (project[0].ownerId !== userId) {
       throw new ForbiddenException('권한이 없습니다.');
     }
-    // 조인 테이블에서 삭제
+    // 관계 테이블에서 삭제
     await getConnection()
       .createQueryBuilder()
       .relation(Project, 'members')
