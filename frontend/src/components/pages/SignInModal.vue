@@ -24,7 +24,6 @@
 <script>
 import { computed, defineComponent, ref } from 'vue';
 import BaseModal from '../templates/BaseModal.vue';
-import { editProfileAPI } from '@/api/modules/auth';
 
 export default defineComponent({
   name: 'SignInModal',
@@ -49,8 +48,7 @@ export default defineComponent({
           errorMsg.value = '닉네임을 입력하세요!😤';
           return;
         }
-        const data = await editProfileAPI({ name: nickname.value });
-        console.log('data: ', data);
+        // TODO - Edit Profile
         isShow.value = false;
       } catch (error) {
         errorMsg.value = '중복된 닉네임입니다😥';
@@ -76,18 +74,22 @@ export default defineComponent({
   font-size: $--font-size-large;
   margin-bottom: 20px;
 }
+
 .sub-title {
   font-size: $--font-size-medium;
   margin: 15px 0;
 }
+
 .nickname-container {
   display: flex;
   font-size: $--font-size-medium;
   margin-bottom: 10px;
+
   .nickname-container__label {
     margin-right: 10px;
   }
 }
+
 .footer-container {
   display: flex;
   justify-content: center;
