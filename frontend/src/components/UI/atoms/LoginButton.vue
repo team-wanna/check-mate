@@ -66,8 +66,18 @@ export default defineComponent({
       isShowLoginModal.value = true;
     };
     const clickLogoutBtn = () => {
+      const defaultProfile: Profile = {
+        id: -1,
+        intro: '',
+        createdAt: '',
+        email: '',
+        name: '',
+        profileImageUrl: '',
+        skills: [],
+        updatedAt: '',
+      };
       window.sessionStorage.clear();
-      store.commit('user/setUserState', 'loggedOut');
+      store.commit('user/setProfile', defaultProfile);
       router.push('/');
     };
     const clickMyProfile = () => {

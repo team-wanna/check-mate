@@ -10,9 +10,11 @@ interface Profile {
   updatedAt: string;
   skills: Skill[];
 }
+
 interface EditProfile {
   name: string;
   intro: string;
+  email: string;
 }
 
 export { Profile, EditProfile };
