@@ -10,6 +10,7 @@ import { Project } from './entities/projects.entity';
 import { Skill } from './entities/skills.entity';
 import { AwsModule } from './aws/aws.module';
 import { SkillsModule } from './skills/skills.module';
+import { Alarm } from './entities/alarm.entity';
 
 @Module({
   imports: [
@@ -23,7 +24,7 @@ import { SkillsModule } from './skills/skills.module';
       username: process.env.MYSQL_USERNAME,
       password: process.env.MYSQL_PASSWORD,
       database: process.env.MYSQL_DATABASE,
-      entities: [User, Project, Skill],
+      entities: [User, Project, Skill, Alarm],
       synchronize: true, //! set 'false' in production
       logging: true,
     }),
