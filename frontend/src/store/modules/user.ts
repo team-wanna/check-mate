@@ -1,7 +1,7 @@
 import { Module } from 'vuex';
 import { RootState } from '@/utils/define';
-import { Profile } from '@/api/modules/users/types';
-import { getUserProfileAPI } from '@/api/modules/users';
+import { EditProfile, Profile } from '@/api/modules/users/types';
+import { editProfileAPI, getUserProfileAPI } from '@/api/modules/users';
 
 interface State {
   profile: Profile;
@@ -22,6 +22,10 @@ const user: Module<State, RootState> = {
   actions: {
     fetchProfile: async ({ commit }) => {
       const { data } = await getUserProfileAPI();
+      commit('setProfile', data.data[0]);
+    },
+    updateProfile: async ({ commit }, payload: Partial<EditProfile>) => {
+      const { data } = await editProfileAPI(payload);
       commit('setProfile', data.data[0]);
     },
   },
