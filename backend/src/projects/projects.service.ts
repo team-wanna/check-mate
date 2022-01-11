@@ -7,7 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { AwsService } from 'src/aws/aws.service';
 import { Skill } from 'src/entities/skills.entity';
 import { User } from 'src/entities/users.entity';
-import { Brackets, getConnection, getRepository, Repository } from 'typeorm';
+import { getConnection, Repository } from 'typeorm';
 import { Project } from '../entities/projects.entity';
 
 @Injectable()
@@ -68,6 +68,12 @@ export class ProjectsService {
       description,
       location,
     });
+    // 조인 테이블에 추가
+    await getConnection()
+      .createQueryBuilder()
+      .relation(Project, 'members')
+      .of(project.id)
+      .add(userId);
     return this.getProject(project.id);
   }
 
@@ -153,37 +159,6 @@ export class ProjectsService {
     return this.getProjectSkills(projectId);
   }
 
-  async getStaredProject(userId) {
-    const projects = await getConnection()
-      .createQueryBuilder()
-      .relation(User, 'stars')
-      .of(userId)
-      .loadMany();
-    return projects.map(({ id, title, logoImageUrl }) => {
-      return { id, title, logoImageUrl };
-    });
-  }
-
-  async starsProject(userId, projectId) {
-    // 조인 테이블에 추가
-    await getConnection()
-      .createQueryBuilder()
-      .relation(User, 'stars')
-      .of(userId)
-      .add(projectId);
-    return this.getStaredProject(userId);
-  }
-
-  async unstarsProject(userId, projectId) {
-    // 조인 테이블에서 삭제
-    await getConnection()
-      .createQueryBuilder()
-      .relation(User, 'stars')
-      .of(userId)
-      .remove(projectId);
-    return this.getStaredProject(userId);
-  }
-
   private async deleteSavedLogoImage(logoImageUrl) {
     if (logoImageUrl) {
       const key = logoImageUrl.split(
@@ -220,5 +195,95 @@ export class ProjectsService {
       logoImageUrl: null,
     });
     return this.getProject(projectId);
+  }
+
+  async getStaredProject(userId) {
+    const projects = await getConnection()
+      .createQueryBuilder()
+      .relation(User, 'stars')
+      .of(userId)
+      .loadMany();
+    return projects.map(({ id, title, logoImageUrl }) => {
+      return { id, title, logoImageUrl };
+    });
+  }
+
+  async starsProject(userId, projectId) {
+    // 조인 테이블에 추가
+    await getConnection()
+      .createQueryBuilder()
+      .relation(User, 'stars')
+      .of(userId)
+      .add(projectId);
+    return this.getStaredProject(userId);
+  }
+
+  async unstarsProject(userId, projectId) {
+    // 조인 테이블에서 삭제
+    await getConnection()
+      .createQueryBuilder()
+      .relation(User, 'stars')
+      .of(userId)
+      .remove(projectId);
+    return this.getStaredProject(userId);
+  }
+
+  async requestToJoin(userId, projectId) {
+    //TODO: 요청 알람을 등록한다.
+    return;
+  }
+
+  private async getMembers(projectId) {
+    return await getConnection()
+      .createQueryBuilder()
+      .relation(Project, 'members')
+      .of(projectId)
+      .loadMany();
+  }
+
+  async responseToJoin(userId, projectId, requestId, isAccept) {
+    const project = await this.getProject(projectId);
+    if (project[0].ownerId !== userId) {
+      throw new ForbiddenException('권한이 없습니다.');
+    }
+    //TODO: requestId로 요청 sender의 ID를 가져온다.
+    const applicantId = 10;
+    if (isAccept) {
+      //TODO: 응답 알람을 등록한다.
+      // 조인 테이블에 추가
+      await getConnection()
+        .createQueryBuilder()
+        .relation(Project, 'members')
+        .of(projectId)
+        .add(applicantId);
+      return this.getMembers(projectId);
+    } else {
+      //TODO: 응답 알람을 등록한다.
+      return;
+    }
+  }
+
+  async leaveProject(userId, projectId) {
+    // 조인 테이블에서 삭제
+    await getConnection()
+      .createQueryBuilder()
+      .relation(Project, 'members')
+      .of(projectId)
+      .remove(userId);
+    return this.getMembers(projectId);
+  }
+
+  async expelMember(userId, projectId, memberId) {
+    const project = await this.getProject(projectId);
+    if (project[0].ownerId !== userId) {
+      throw new ForbiddenException('권한이 없습니다.');
+    }
+    // 조인 테이블에서 삭제
+    await getConnection()
+      .createQueryBuilder()
+      .relation(Project, 'members')
+      .of(projectId)
+      .remove(memberId);
+    return this.getMembers(projectId);
   }
 }

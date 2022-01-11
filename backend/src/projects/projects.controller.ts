@@ -6,6 +6,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseBoolPipe,
   ParseIntPipe,
   Patch,
   Post,
@@ -132,28 +133,6 @@ export class ProjectsController {
     return this.projectsService.deleteProjectSkill(user.id, projectId, value);
   }
 
-  @ApiOperation({ summary: '프로젝트 즐겨찾기 등록하기' })
-  @ApiResponseDto(StaredProjectDto)
-  @UseGuards(JwtAuthGuard)
-  @Post(':id/stars')
-  starsProject(
-    @CurrentUser() user,
-    @Param('id', ParseIntPipe) projectId: number,
-  ) {
-    return this.projectsService.starsProject(user.id, projectId);
-  }
-
-  @ApiOperation({ summary: '프로젝트 즐겨찾기 해제하기' })
-  @ApiResponseDto(StaredProjectDto)
-  @UseGuards(JwtAuthGuard)
-  @Delete(':id/stars')
-  unstarsProject(
-    @CurrentUser() user,
-    @Param('id', ParseIntPipe) projectId: number,
-  ) {
-    return this.projectsService.unstarsProject(user.id, projectId);
-  }
-
   @ApiOperation({ summary: '프로젝트 로고 이미지 변경하기' })
   @ApiResponseDto(ProjectDto)
   @UseGuards(JwtAuthGuard)
@@ -180,5 +159,84 @@ export class ProjectsController {
     @Param('id', ParseIntPipe) projectId: number,
   ) {
     return this.projectsService.initLogoImage(user.id, projectId);
+  }
+
+  @ApiOperation({ summary: '프로젝트 즐겨찾기 등록하기' })
+  @ApiResponseDto(StaredProjectDto)
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/stars')
+  starsProject(
+    @CurrentUser() user,
+    @Param('id', ParseIntPipe) projectId: number,
+  ) {
+    return this.projectsService.starsProject(user.id, projectId);
+  }
+
+  @ApiOperation({ summary: '프로젝트 즐겨찾기 해제하기' })
+  @ApiResponseDto(StaredProjectDto)
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id/stars')
+  unstarsProject(
+    @CurrentUser() user,
+    @Param('id', ParseIntPipe) projectId: number,
+  ) {
+    return this.projectsService.unstarsProject(user.id, projectId);
+  }
+
+  @ApiOperation({ summary: '프로젝트 가입 요청하기' })
+  @ApiOkResponse()
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/request')
+  requestToJoin(
+    @CurrentUser() user,
+    @Param('id', ParseIntPipe) projectId: number,
+  ) {
+    return this.projectsService.requestToJoin(user.id, projectId);
+  }
+
+  @ApiOperation({ summary: '프로젝트 가입 수락/거절하기' })
+  @ApiOkResponse()
+  @ApiQuery({
+    name: 'accept',
+    type: Boolean,
+    required: true,
+  })
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/request/:requestId/response')
+  responseToJoin(
+    @CurrentUser() user,
+    @Param('id', ParseIntPipe) projectId: number,
+    @Param('requestId', ParseIntPipe) requestId: number,
+    @Query('accept', ParseBoolPipe) isAccept: boolean,
+  ) {
+    return this.projectsService.responseToJoin(
+      user.id,
+      projectId,
+      requestId,
+      isAccept,
+    );
+  }
+
+  @ApiOperation({ summary: '참여중인 프로젝트 탈퇴하기' })
+  @ApiOkResponse()
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id/members')
+  leaveProject(
+    @CurrentUser() user,
+    @Param('id', ParseIntPipe) projectId: number,
+  ) {
+    return this.projectsService.leaveProject(user.id, projectId);
+  }
+
+  @ApiOperation({ summary: '참여중인 멤버 탈퇴시키기' })
+  @ApiOkResponse()
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id/members/:memberId')
+  expelMember(
+    @CurrentUser() user,
+    @Param('id', ParseIntPipe) projectId: number,
+    @Param('memberId', ParseIntPipe) memberId: number,
+  ) {
+    return this.projectsService.expelMember(user.id, projectId, memberId);
   }
 }
