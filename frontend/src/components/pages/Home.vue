@@ -9,6 +9,7 @@ import { useStore } from 'vuex';
 import BaseLayout from '@/components/templates/BaseLayout.vue';
 import SignUpModal from '@/components/pages/SignUpModal.vue';
 import api from '@/api';
+import useToast from '@/composables/toast';
 
 export default defineComponent({
   name: 'Home',
@@ -21,6 +22,7 @@ export default defineComponent({
   },
   setup() {
     const store = useStore();
+    const { triggerToast } = useToast();
     const token = window.sessionStorage.getItem('token');
     const isShowSignIn = ref(false);
 
@@ -30,6 +32,7 @@ export default defineComponent({
         // @ts-ignore
         api.apiInstance.defaults.headers.common.Authorization = `Bearer ${token}`;
         await store.dispatch('user/fetchProfile');
+        await triggerToast('로그인 되었습니다.', 'success');
       }
     });
 

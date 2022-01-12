@@ -46,12 +46,14 @@ import { useStore } from 'vuex';
 import router from '@/router';
 import LoginModal from '@/components/pages/LoginModal.vue';
 import { Profile } from '@/api/modules/users/types';
+import useToast from '@/composables/toast';
 
 export default defineComponent({
   name: 'LoginButton',
   components: { LoginModal },
   setup() {
     const store = useStore();
+    const { triggerToast } = useToast();
     const isShowProfilePopup = ref(false);
     const isShowLoginModal = ref(false);
     const profile = computed<Profile>(() => store.getters['user/getProfile']);
@@ -65,7 +67,7 @@ export default defineComponent({
     const clickLoginBtn = () => {
       isShowLoginModal.value = true;
     };
-    const clickLogoutBtn = () => {
+    const clickLogoutBtn = async () => {
       const defaultProfile: Profile = {
         id: -1,
         intro: '',
@@ -78,7 +80,8 @@ export default defineComponent({
       };
       window.sessionStorage.clear();
       store.commit('user/setProfile', defaultProfile);
-      router.push('/');
+      await triggerToast('로그아웃 되었습니다.', 'success');
+      await router.push('/');
     };
     const clickMyProfile = () => {
       router.push('/profile');
