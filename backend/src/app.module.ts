@@ -11,6 +11,7 @@ import { Skill } from './entities/skills.entity';
 import { AwsModule } from './aws/aws.module';
 import { SkillsModule } from './skills/skills.module';
 import { Alarm } from './entities/alarm.entity';
+import { AlarmsModule } from './alarms/alarms.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { Alarm } from './entities/alarm.entity';
     ProjectsModule,
     AwsModule,
     SkillsModule,
+    AlarmsModule,
   ],
 })
 export class AppModule implements NestModule {
