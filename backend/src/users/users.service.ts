@@ -123,11 +123,13 @@ export class UsersService {
   }
 
   private async deleteSavedProfileImage(profileImageUrl) {
-    const key = profileImageUrl.split(
-      `https://${process.env.AWS_S3_BUCKET_NAME}.s3.amazonaws.com/`,
+    const file = profileImageUrl.split(
+      `https://${process.env.AWS_S3_BUCKET_NAME}.s3.amazonaws.com/users/`,
     )[1];
-    if (key && key !== 'users/boy.png' && key !== 'users/girl.png') {
-      await this.awsService.deleteS3Object(key);
+    const filename = file.split('.').slice(0, -1).join('.');
+    const extname = file.split('.').reverse()[0];
+    if (file && isNaN(filename)) {
+      await this.awsService.deleteS3Object(`users/${filename}.${extname}`);
     }
   }
 
@@ -147,10 +149,17 @@ export class UsersService {
 
   async initProfileImage(user, select) {
     const { id: userId, profileImageUrl } = user;
-    await this.deleteSavedProfileImage(profileImageUrl);
-    await this.usersRepository.update(userId, {
-      profileImageUrl: `https://${process.env.AWS_S3_BUCKET_NAME}.s3.amazonaws.com/users/${select}.png`,
-    });
+    const baseURL = `https://${process.env.AWS_S3_BUCKET_NAME}.s3.amazonaws.com/users/`;
+    if (select > 0 && select < 10) {
+      await this.deleteSavedProfileImage(profileImageUrl);
+      await this.usersRepository.update(userId, {
+        profileImageUrl: `${baseURL}${select}.png`,
+      });
+    } else {
+      await this.usersRepository.update(userId, {
+        profileImageUrl: `${baseURL}${Math.floor(Math.random() * 9) + 1}.png`,
+      });
+    }
     return this.getUser(userId);
   }
 
