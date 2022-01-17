@@ -15,55 +15,54 @@
     </template>
     <template #footer>
       <div class="footer-container">
-        <span class="btn--primary" @click="clickSignIn">가입 완료</span>
+        <span class="btn--primary" @click="clickSignUp">가입하기</span>
       </div>
     </template>
   </base-modal>
 </template>
 
-<script>
-import { computed, defineComponent, ref } from 'vue';
+<script lang="ts">
+import { defineComponent, ref } from 'vue';
+import { useStore } from 'vuex';
 import BaseModal from '../templates/BaseModal.vue';
 
 export default defineComponent({
-  name: 'SignInModal',
+  name: 'SignUpModal',
   components: { BaseModal },
   props: {
     visible: {
-      type: Boolean,
-      default: false,
+      type: String,
+      default: 'false',
     },
   },
-  setup(props, { emit }) {
+  setup(props) {
+    const store = useStore();
     const nickname = ref('');
     const errorMsg = ref('');
-    const isShow = computed({
-      get: () => props.visible,
-      set: (val) => emit('update:visible', val),
-    });
+    const isShow = ref(JSON.parse(props.visible));
 
-    const singIn = async () => {
+    const singUp = async () => {
       try {
         if (!nickname.value) {
-          errorMsg.value = '닉네임을 입력하세요!😤';
+          errorMsg.value = '닉네임을 입력하세요😤';
           return;
         }
-        // TODO - Edit Profile
+        await store.dispatch('user/updateProfile', { name: nickname.value });
         isShow.value = false;
       } catch (error) {
         errorMsg.value = '중복된 닉네임입니다😥';
         console.error(error);
       }
     };
-    const clickSignIn = () => {
-      singIn();
+    const clickSignUp = () => {
+      singUp();
     };
 
     return {
       nickname,
       errorMsg,
       isShow,
-      clickSignIn,
+      clickSignUp,
     };
   },
 });

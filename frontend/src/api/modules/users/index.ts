@@ -12,7 +12,7 @@ const createUserSkill = (value: string): CommonResponse<Skill> =>
 const deleteUserSkill = (value: string): CommonResponse<Skill> =>
   api.apiInstance.delete(`/users/me/skills?value=${value}`);
 
-const editProfile = (data: EditProfile): CommonResponse<Profile> =>
+const editProfileAPI = (data: Partial<EditProfile>): CommonResponse<Profile> =>
   api.apiInstance.patch('/users/me', data);
 
 const editProfileImage = (data: FormData): CommonResponse<Profile> =>
@@ -22,6 +22,6 @@ export {
   getUserProfileAPI,
   createUserSkill,
   deleteUserSkill,
-  editProfile,
+  editProfileAPI,
   editProfileImage,
 };

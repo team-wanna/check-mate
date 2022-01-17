@@ -121,7 +121,7 @@ import { computed, defineComponent, onMounted, ref } from 'vue';
 import { useStore } from 'vuex';
 import BaseLayout from '@/components/templates/BaseLayout.vue';
 import {
-  editProfile,
+  editProfileAPI,
   editProfileImage,
   getUserProfileAPI,
   createUserSkill,
@@ -248,12 +248,12 @@ export default defineComponent({
       }
     };
     const clickBaseProfileSaveBtn = async () => {
-      const data: EditProfile = {
+      const data: Partial<EditProfile> = {
         name: profile.value.name,
         intro: profile.value.intro,
       };
       try {
-        await editProfile(data);
+        await editProfileAPI(data);
         await triggerToast('기본정보가 수정되었습니다😁', 'success');
       } catch (error) {
         console.error(error);
