@@ -19,11 +19,13 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     profile: any,
     done: VerifyCallback,
   ): Promise<any> {
-    const { provider, id, photos } = profile;
+    const { provider, id } = profile;
     const user = {
       provider,
       subId: id,
-      profileImageUrl: photos[0].value,
+      profileImageUrl: `https://${
+        process.env.AWS_S3_BUCKET_NAME
+      }.s3.amazonaws.com/users/${Math.floor(Math.random() * 9) + 1}.png`,
     };
     done(null, user);
   }

@@ -9,7 +9,7 @@ export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
       clientID: process.env.FACEBOOK_CLIENT_ID,
       clientSecret: process.env.FACEBOOK_SECRET,
       callbackURL: `http://localhost:${process.env.PORT_FE}/auth`,
-      profileFields: ['emails', 'photos'],
+      // profileFields: ['emails', 'photos'],
     });
   }
 
@@ -19,11 +19,13 @@ export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
     profile: any,
     done: VerifyCallback,
   ): Promise<any> {
-    const { provider, id, photos } = profile;
+    const { provider, id } = profile;
     const user = {
       provider,
       subId: id,
-      profileImageUrl: photos[0].value,
+      profileImageUrl: `https://${
+        process.env.AWS_S3_BUCKET_NAME
+      }.s3.amazonaws.com/users/${Math.floor(Math.random() * 9) + 1}.png`,
     };
     done(null, user);
   }
