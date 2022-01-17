@@ -198,7 +198,6 @@ export class ProjectsController {
   @ApiOkResponse()
   @ApiQuery({
     name: 'accept',
-    type: Boolean,
     required: true,
   })
   @UseGuards(JwtAuthGuard)

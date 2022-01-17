@@ -87,8 +87,8 @@ export class UsersController {
   @ApiOperation({ summary: '프로필 이미지 초기화하기' })
   @ApiQuery({
     name: 'select',
-    type: Number,
     required: true,
+    description: '1 ~ 9',
   })
   @ApiResponseDto(UserDto)
   @UseGuards(JwtAuthGuard)
