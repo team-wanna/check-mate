@@ -53,8 +53,9 @@ export class User extends BaseEntity {
     description: '프로필 이미지 URL',
     example: 'http://localhost:8080/media/users/simba1632737090988.jpg',
   })
+  @IsNotEmpty()
   @IsString()
-  @Column({ name: 'profile_image_url', default: null })
+  @Column({ name: 'profile_image_url' })
   profileImageUrl: string | null;
 
   @ApiProperty({
@@ -77,30 +78,21 @@ export class User extends BaseEntity {
     description: '가입일',
     example: '2021-09-26T22:04:38.679Z',
   })
-  @IsNotEmpty()
-  @CreateDateColumn({
-    name: 'created_at',
-  })
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
   @ApiProperty({
     description: '수정일',
     example: '2021-09-26T22:04:38.679Z',
   })
-  @IsNotEmpty()
-  @UpdateDateColumn({
-    name: 'updated_at',
-  })
+  @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
   @ApiProperty({
     description: '탈퇴일',
     example: null,
   })
-  @DeleteDateColumn({
-    name: 'deleted_at',
-    default: null,
-  })
+  @DeleteDateColumn({ name: 'deleted_at', default: null })
   deletedAt: Date | null;
 
   // 관계 설정
