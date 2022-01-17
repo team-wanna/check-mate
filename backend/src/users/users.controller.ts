@@ -14,7 +14,12 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiOkResponse,
+  ApiOperation,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { ApiResponseDto } from 'src/common/decorators/api-response-dto.decorator';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
@@ -80,10 +85,18 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: '프로필 이미지 초기화하기' })
+  @ApiQuery({
+    name: 'select',
+    type: Number,
+    required: true,
+  })
   @ApiResponseDto(UserDto)
   @UseGuards(JwtAuthGuard)
   @Delete('me/upload')
-  initProfileImage(@CurrentUser() user, @Query('select') select: string) {
+  initProfileImage(
+    @CurrentUser() user,
+    @Query('select', ParseIntPipe) select: number,
+  ) {
     return this.usersService.initProfileImage(user, select);
   }
 
