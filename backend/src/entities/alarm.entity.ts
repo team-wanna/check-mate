@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { AlarmType } from 'src/common/types/AlarmType';
 import {
   BaseEntity,
   Column,
@@ -24,7 +25,7 @@ export class Alarm extends BaseEntity {
   @IsNotEmpty()
   @IsString()
   @Column()
-  type: 'apply' | 'accept' | 'refuse';
+  type: AlarmType;
 
   @ApiProperty({
     description: '프로젝트 아이디',

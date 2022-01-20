@@ -10,11 +10,11 @@ export class AlarmsService {
     private readonly alarmsRepository: Repository<Alarm>,
   ) {}
 
+  getAllAlarms() {}
+
   getAlarm() {}
 
   createAlarm() {}
 
   updateAlarm() {}
-
-  deleteAlarm() {}
 }
