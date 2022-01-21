@@ -8,16 +8,13 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import {
-  ApiOkResponse,
-  ApiOperation,
-  ApiQuery,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { ApiResponseDto } from 'src/common/decorators/api-response-dto.decorator';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { Alarm } from 'src/entities/alarm.entity';
 import { AlarmsService } from './alarms.service';
+import { CreateAlarmDto } from './dto/create-alarm.dto';
 
 @ApiTags('Alarm')
 @Controller('api/alarms')
@@ -25,7 +22,7 @@ export class AlarmsController {
   constructor(private readonly alarmsService: AlarmsService) {}
 
   @ApiOperation({ summary: '현재 사용자의 모든 알람 가져오기' })
-  // @ApiResponseDto()
+  @ApiResponseDto(Alarm)
   @UseGuards(JwtAuthGuard)
   @Get()
   getAllAlarms(@CurrentUser() user) {
@@ -36,15 +33,12 @@ export class AlarmsController {
   @ApiOkResponse({ status: 201 })
   @UseGuards(JwtAuthGuard)
   @Post()
-  createAlarm(
-    @CurrentUser() user,
-    @Body() body, //TODO: Type 추가하기
-  ) {
+  createAlarm(@CurrentUser() user, @Body() body: CreateAlarmDto) {
     return this.alarmsService.createAlarm(user.id, body);
   }
 
   @ApiOperation({ summary: '알람 읽음 처리하기' })
-  // @ApiResponseDto()
+  @ApiResponseDto(Alarm)
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
   updateAlarm(@CurrentUser() user, @Param('id', ParseIntPipe) alarmId: number) {
