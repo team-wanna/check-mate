@@ -1,10 +1,11 @@
 import {
+  Body,
   Controller,
   Get,
+  Param,
   ParseIntPipe,
   Patch,
   Post,
-  Query,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -16,7 +17,6 @@ import {
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { ApiResponseDto } from 'src/common/decorators/api-response-dto.decorator';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
-import { AlarmType } from 'src/common/types/AlarmType';
 import { AlarmsService } from './alarms.service';
 
 @ApiTags('Alarm')
@@ -29,44 +29,25 @@ export class AlarmsController {
   @UseGuards(JwtAuthGuard)
   @Get()
   getAllAlarms(@CurrentUser() user) {
-    return this.alarmsService.getAllAlarms();
-  }
-
-  @ApiOperation({ summary: '하나의 알람 가져오기' })
-  // @ApiResponseDto()
-  @UseGuards(JwtAuthGuard)
-  @Get(':id')
-  getAlarm(@CurrentUser() user) {
-    return this.alarmsService.getAlarm();
+    return this.alarmsService.getAllAlarms(user.id);
   }
 
   @ApiOperation({ summary: '알람 생성하기' })
   @ApiOkResponse({ status: 201 })
   @UseGuards(JwtAuthGuard)
-  @ApiQuery({
-    name: 'type',
-    required: true,
-    description: '알람 타입 (apply/accept/refuse)',
-  })
-  @ApiQuery({
-    name: 'projectId',
-    required: true,
-    description: '프로젝트 아이디',
-  })
-  @Post(':id')
+  @Post()
   createAlarm(
     @CurrentUser() user,
-    @Query('type') type: AlarmType,
-    @Query('projectId', ParseIntPipe) projectId: number,
+    @Body() body, //TODO: Type 추가하기
   ) {
-    return this.alarmsService.createAlarm();
+    return this.alarmsService.createAlarm(user.id, body);
   }
 
   @ApiOperation({ summary: '알람 읽음 처리하기' })
   // @ApiResponseDto()
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  updateAlarm(@CurrentUser() user) {
-    return this.alarmsService.updateAlarm();
+  updateAlarm(@CurrentUser() user, @Param('id', ParseIntPipe) alarmId: number) {
+    return this.alarmsService.updateAlarm(alarmId);
   }
 }
