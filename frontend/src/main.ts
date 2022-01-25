@@ -1,7 +1,12 @@
 import { createApp } from 'vue';
 import '@/style/main.scss';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faChess } from '@fortawesome/free-solid-svg-icons';
+import {
+  faChess,
+  faCheckCircle,
+  faUpload,
+  faFileUpload,
+} from '@fortawesome/free-solid-svg-icons';
 import {
   faBell,
   faUserCircle,
@@ -25,6 +30,9 @@ library.add(
   faGoogle,
   faGithubSquare,
   faFacebookSquare,
+  faCheckCircle,
+  faUpload,
+  faFileUpload,
 );
 
 createApp(App)
