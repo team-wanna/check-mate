@@ -9,12 +9,8 @@
             @click="clickClose"
           />
         </header>
-        <div class="base-modal-main">
-          <slot name="main"></slot>
-        </div>
-        <footer>
-          <slot name="footer"></slot>
-        </footer>
+        <slot name="main"></slot>
+        <slot name="footer"></slot>
       </div>
     </div>
   </teleport>
@@ -63,12 +59,14 @@ export default defineComponent({
   align-items: center;
   justify-content: center;
 }
+
 .container {
   width: 800px;
   height: 550px;
   border-radius: 20px;
   background-color: #ffffff;
 }
+
 .base-modal-header {
   display: flex;
   justify-content: right;
@@ -77,25 +75,23 @@ export default defineComponent({
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
   background-color: #f8f9fa;
-  height: 60px;
+  height: $--modal-header-height;
   padding: 0 15px;
+
   .logo-container {
     display: flex;
     align-items: center;
   }
 }
-.base-modal-main {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 100px 100px 50px 100px;
-}
+
 .icon {
   margin: 4px;
 }
+
 .icon--large {
   font-size: $--font-size-large;
 }
+
 .fa-window-close {
   cursor: pointer;
 }

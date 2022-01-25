@@ -11,21 +11,15 @@
             <div class="profile-picture">
               <img :src="profile.profileImageUrl" alt="Profile Image" />
             </div>
-            <form method="post" enctype="multipart/form-data">
-              <label class="profile-picture-label" for="picture">
-                📷사진 바꾸기
-              </label>
-              <input
-                type="file"
-                id="picture"
-                name="picture"
-                accept="image/*"
-                @change="loadFile"
-              />
-            </form>
-            <span class="btn-save" @click="clickProfileImageSaveBtn"
-              >저장하기</span
+            <button
+              class="change-profile-btn"
+              @click="clickProfileIconChangeBtn"
             >
+              📷 사진 변경하기
+            </button>
+            <span class="btn-save" @click="clickProfileImageSaveBtn">
+              저장하기
+            </span>
           </div>
         </section>
         <section class="profile-container__content">
@@ -114,29 +108,38 @@
       </div>
     </template>
   </base-layout>
+  <profile-icon-modal
+    v-model:visible="showProfileIconModal"
+    @change-default-icon="changeDefaultIcon"
+    :default-profile-icon="defaultProfileIcon"
+    @upload-custom-icon="uploadCustomIcon"
+  />
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, ref } from 'vue';
+import { defineComponent, onMounted, ref } from 'vue';
 import { useStore } from 'vuex';
+import _ from 'lodash';
 import BaseLayout from '@/components/templates/BaseLayout.vue';
 import {
   editProfileAPI,
-  editProfileImage,
+  editProfileImageAPI,
   getUserProfileAPI,
   createUserSkill,
   deleteUserSkill,
+  editDefaultProfileImageAPI,
 } from '@/api/modules/users';
 import useToast from '@/composables/toast';
 import { getSkillsAPI } from '@/api/modules/skills';
 import SkillItem from '@/components/UI/atoms/SkillItem.vue';
-import { EditProfile, Profile } from '@/api/modules/users/types';
+import { EditProfile } from '@/api/modules/users/types';
 import { Skill } from '@/api/modules/skills/types';
 import api from '@/api';
+import ProfileIconModal from '@/components/pages/ProfileIconModal.vue';
 
 export default defineComponent({
   name: 'Profile',
-  components: { SkillItem, BaseLayout },
+  components: { ProfileIconModal, SkillItem, BaseLayout },
   setup() {
     // TODO - 새로고침시 토큰 유지를 위해 임시로 token 넣음. 추후 공통함수로 묶어야함.
     const token = window.sessionStorage.getItem('token');
@@ -147,14 +150,20 @@ export default defineComponent({
     const store = useStore();
     const { triggerToast } = useToast();
     const profileData = new FormData();
-    const profile = computed<Profile>({
-      get: () => store.getters['user/getProfile'],
-      set: (newProfile) => store.commit('user/setProfile', newProfile),
-    });
+    const profile = ref(_.cloneDeep(store.getters['user/getProfile']));
+    const profileImage = ref(profile.value.profileImageUrl);
     const skillInputRef = ref();
     const searchedSkillData = ref<Skill[]>([]);
     const currentSkill = ref<number>(-1);
     const registeredSkills = ref<Skill[]>([]);
+    const showProfileIconModal = ref(false);
+    const profileFileName = store.getters[
+      'user/getProfile'
+    ].profileImageUrl.split('https://check-mate.s3.amazonaws.com/users/')[1];
+    const defaultProfileIcon = ref(
+      // eslint-disable-next-line no-restricted-globals
+      isNaN(+profileFileName) ? -1 : +profileFileName[0],
+    );
     let searchSkillTimeout = -1;
 
     const searchSkill = (event: any) => {
@@ -226,22 +235,24 @@ export default defineComponent({
       }
     };
 
-    const loadFile = (event: any) => {
-      const { target } = event;
-      const file = target?.files[0];
-
-      profileData.append('profileImageFile', file);
-      profile.value.profileImageUrl = URL.createObjectURL(file);
+    const editProfileImage = async (
+      defaultProfileImage: number,
+      fromData: FormData,
+    ) => {
+      const { data } =
+        defaultProfileImage === -1
+          ? await editProfileImageAPI(fromData)
+          : await editDefaultProfileImageAPI(defaultProfileImage);
+      if (data.success) {
+        await store.dispatch('user/fetchProfile');
+        await triggerToast('프로필 이미지가 수정되었습니다😁', 'success');
+      } else {
+        await triggerToast('프로필 이미지 수정을 실패했습니다☹', 'danger');
+      }
     };
     const clickProfileImageSaveBtn = async () => {
       try {
-        const { data } = await editProfileImage(profileData);
-        if (data.success) {
-          store.commit('user/setProfileImageUrl', data.data[0].profileImageUrl);
-          await triggerToast('프로필 이미지가 수정되었습니다😁', 'success');
-        } else {
-          await triggerToast('프로필 이미지 수정을 실패했습니다☹', 'danger');
-        }
+        await editProfileImage(defaultProfileIcon.value, profileData);
       } catch (error) {
         console.error(error);
         await triggerToast(error, 'danger');
@@ -252,6 +263,7 @@ export default defineComponent({
         name: profile.value.name,
         intro: profile.value.intro,
       };
+
       try {
         await editProfileAPI(data);
         await triggerToast('기본정보가 수정되었습니다😁', 'success');
@@ -277,6 +289,22 @@ export default defineComponent({
         currentSkill.value = searchedSkillData.value.length - 1;
       }
     };
+    const clickProfileIconChangeBtn = () => {
+      showProfileIconModal.value = true;
+    };
+    const changeDefaultIcon = (profileNumber: number) => {
+      defaultProfileIcon.value = profileNumber;
+
+      if (profileNumber !== -1) {
+        // eslint-disable-next-line global-require,import/no-dynamic-require
+        profile.value.profileImageUrl = require(`@/assets/profile/${profileNumber}.png`);
+      }
+    };
+    const uploadCustomIcon = (profileFile: any) => {
+      profileData.delete('profileImageFile');
+      profileData.append('profileImageFile', profileFile);
+      profile.value.profileImageUrl = URL.createObjectURL(profileFile);
+    };
 
     onMounted(async () => {
       const { data } = await getUserProfileAPI();
@@ -293,11 +321,13 @@ export default defineComponent({
 
     return {
       profile,
+      profileImage,
       skillInputRef,
       searchedSkillData,
       currentSkill,
       registeredSkills,
-      loadFile,
+      showProfileIconModal,
+      defaultProfileIcon,
       clickProfileImageSaveBtn,
       clickBaseProfileSaveBtn,
       searchSkill,
@@ -307,6 +337,9 @@ export default defineComponent({
       onFocusoutSkillInput,
       onKeydownSkillInput,
       onKeyupSkillInput,
+      clickProfileIconChangeBtn,
+      changeDefaultIcon,
+      uploadCustomIcon,
     };
   },
 });
@@ -342,6 +375,7 @@ export default defineComponent({
 
   .profile-item--picture {
     .profile-picture {
+      position: relative;
       width: 200px;
       height: 200px;
       margin-bottom: 30px;
@@ -353,7 +387,7 @@ export default defineComponent({
       }
     }
 
-    .profile-picture-label {
+    .change-profile-btn {
       font-size: $--font-size-medium;
       margin-left: 20px;
       padding: 10px 5px;
@@ -363,7 +397,7 @@ export default defineComponent({
       transition: color, background-color ease-in 0.1s;
     }
 
-    .profile-picture-label:hover {
+    .change-profile-btn:hover {
       color: #ffffff;
       border-color: $--color-primary;
       background-color: $--color-primary;
@@ -403,10 +437,6 @@ export default defineComponent({
         padding: 8px;
       }
     }
-  }
-
-  #picture {
-    visibility: hidden;
   }
 }
 
