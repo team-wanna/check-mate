@@ -29,8 +29,8 @@ export class AlarmsController {
     return this.alarmsService.getAllAlarms(user.id);
   }
 
-  @ApiOperation({ summary: '알람 생성하기' })
-  @ApiOkResponse({ status: 201 })
+  @ApiOperation({ summary: '(프로젝트 가입 신청/수락/거절) 알람 생성하기' })
+  @ApiResponseDto(Alarm)
   @UseGuards(JwtAuthGuard)
   @Post()
   createAlarm(@CurrentUser() user, @Body() body: CreateAlarmDto) {
@@ -42,6 +42,6 @@ export class AlarmsController {
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
   updateAlarm(@CurrentUser() user, @Param('id', ParseIntPipe) alarmId: number) {
-    return this.alarmsService.updateAlarm(alarmId);
+    return this.alarmsService.updateAlarm(user.id, alarmId);
   }
 }
