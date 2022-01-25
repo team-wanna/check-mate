@@ -183,39 +183,6 @@ export class ProjectsController {
     return this.projectsService.unstarsProject(user.id, projectId);
   }
 
-  @ApiOperation({ summary: '프로젝트 가입 요청하기' })
-  @ApiOkResponse()
-  @UseGuards(JwtAuthGuard)
-  @Post(':id/request')
-  requestToJoin(
-    @CurrentUser() user,
-    @Param('id', ParseIntPipe) projectId: number,
-  ) {
-    return this.projectsService.requestToJoin(user.id, projectId);
-  }
-
-  @ApiOperation({ summary: '프로젝트 가입 수락/거절하기' })
-  @ApiOkResponse()
-  @ApiQuery({
-    name: 'accept',
-    required: true,
-  })
-  @UseGuards(JwtAuthGuard)
-  @Post(':id/request/:requestId/response')
-  responseToJoin(
-    @CurrentUser() user,
-    @Param('id', ParseIntPipe) projectId: number,
-    @Param('requestId', ParseIntPipe) requestId: number,
-    @Query('accept', ParseBoolPipe) isAccept: boolean,
-  ) {
-    return this.projectsService.responseToJoin(
-      user.id,
-      projectId,
-      requestId,
-      isAccept,
-    );
-  }
-
   @ApiOperation({ summary: '참여중인 프로젝트 탈퇴하기' })
   @ApiOkResponse()
   @UseGuards(JwtAuthGuard)

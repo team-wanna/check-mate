@@ -228,39 +228,12 @@ export class ProjectsService {
     return this.getStaredProject(userId);
   }
 
-  async requestToJoin(userId, projectId) {
-    //TODO: 요청 알람을 등록한다.
-    return;
-  }
-
   private async getMembers(projectId) {
     return await getConnection()
       .createQueryBuilder()
       .relation(Project, 'members')
       .of(projectId)
       .loadMany();
-  }
-
-  async responseToJoin(userId, projectId, requestId, isAccept) {
-    const project = await this.getProject(projectId);
-    if (project[0].ownerId !== userId) {
-      throw new ForbiddenException('권한이 없습니다.');
-    }
-    //TODO: requestId로 요청 sender의 ID를 가져온다.
-    const applicantId = 10;
-    if (isAccept) {
-      //TODO: 응답 알람을 등록한다.
-      // 관계 테이블에 추가
-      await getConnection()
-        .createQueryBuilder()
-        .relation(Project, 'members')
-        .of(projectId)
-        .add(applicantId);
-      return this.getMembers(projectId);
-    } else {
-      //TODO: 응답 알람을 등록한다.
-      return;
-    }
   }
 
   async leaveProject(userId, projectId) {
