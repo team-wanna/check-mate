@@ -10,10 +10,10 @@ export class SkillsService {
   ) {}
 
   async searchSkill(search) {
-    if (search === '') {
-      return [];
+    if (search == null) {
+      return this.skillsRepository.find();
     }
-    return await this.skillsRepository.query(`
+    return this.skillsRepository.query(`
       SELECT *
       FROM skill
       WHERE name LIKE '%${search}%'
