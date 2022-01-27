@@ -42,7 +42,9 @@ export default defineComponent({
   border-bottom: $--color-border solid 3px;
   align-items: center;
   background-color: #ffffff;
+  z-index: 100;
 }
+
 .item-container {
   width: 100%;
   height: 100%;
@@ -51,6 +53,7 @@ export default defineComponent({
   justify-content: space-between;
   align-items: center;
   cursor: pointer;
+
   a {
     font-size: 36px;
   }

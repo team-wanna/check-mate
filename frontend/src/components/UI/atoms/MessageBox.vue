@@ -33,7 +33,7 @@ export default defineComponent({
 
 <style scoped lang="scss">
 .message-box-wrapper {
-  z-index: 2000;
+  z-index: 120;
   position: fixed;
   top: 0;
   bottom: 0;
@@ -51,7 +51,7 @@ export default defineComponent({
 }
 
 .message-box-modal {
-  z-index: 1990;
+  z-index: 110;
   position: fixed;
   top: 0;
   bottom: 0;

@@ -35,8 +35,10 @@ export default defineComponent({
   margin: 0 auto;
   top: 10px;
   left: 50%;
+  z-index: 110;
   transform: translateX(-50%);
 }
+
 .toast {
   height: 50px;
   padding: 0 10px;
@@ -48,9 +50,11 @@ export default defineComponent({
   font-size: $--font-size-medium;
   color: #ffffff;
 }
+
 .toast--success {
   background-color: $--color-success;
 }
+
 .toast--danger {
   background-color: $--color-danger;
 }
@@ -59,6 +63,7 @@ export default defineComponent({
 .slide-leave-active {
   transition: all 0.5s ease;
 }
+
 .slide-enter-from,
 .slide-leave-to {
   opacity: 0;
