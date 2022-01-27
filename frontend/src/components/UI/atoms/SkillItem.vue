@@ -9,7 +9,6 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
-import { skillColorMap } from '@/common/Utils';
 import { Skill } from '@/api/modules/skills/types';
 
 export default defineComponent({
@@ -21,13 +20,6 @@ export default defineComponent({
     },
   },
   emits: ['delete-btn'],
-  setup(props) {
-    const skillBgColor: string = skillColorMap[props.skillInfo.value];
-
-    return {
-      skillBgColor,
-    };
-  },
 });
 </script>
 
@@ -37,12 +29,14 @@ export default defineComponent({
   font-size: 15px;
   padding: 4px 8px;
   margin: 5px 2px;
-  background-color: v-bind('skillBgColor');
-  color: #ffffff;
+  background-color: $--color-primary-bright;
+  color: $--color-primary;
   border-radius: 5px;
+
   &__skill-content {
     margin-right: 5px;
   }
+
   &__delete-btn {
     cursor: pointer;
     font-size: 14px;
