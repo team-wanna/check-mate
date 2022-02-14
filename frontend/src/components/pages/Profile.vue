@@ -136,6 +136,7 @@ import { EditProfile } from '@/api/modules/users/types';
 import { Skill } from '@/api/modules/skills/types';
 import api from '@/api';
 import ProfileIconModal from '@/components/pages/ProfileIconModal.vue';
+import useLoadingMask from '@/composables/loadingMask';
 
 export default defineComponent({
   name: 'Profile',
@@ -149,6 +150,7 @@ export default defineComponent({
 
     const store = useStore();
     const { triggerToast } = useToast();
+    const { showLoadingMask, hideLoadingMask } = useLoadingMask();
     const profileData = new FormData();
     const profile = ref(_.cloneDeep(store.getters['user/getProfile']));
     const profileImage = ref(profile.value.profileImageUrl);
@@ -252,10 +254,13 @@ export default defineComponent({
     };
     const clickProfileImageSaveBtn = async () => {
       try {
+        await showLoadingMask();
         await editProfileImage(defaultProfileIcon.value, profileData);
       } catch (error) {
         console.error(error);
         await triggerToast(error, 'danger');
+      } finally {
+        await hideLoadingMask();
       }
     };
     const clickBaseProfileSaveBtn = async () => {
@@ -265,11 +270,14 @@ export default defineComponent({
       };
 
       try {
+        await showLoadingMask();
         await editProfileAPI(data);
         await triggerToast('기본정보가 수정되었습니다😁', 'success');
       } catch (error) {
         console.error(error);
         await triggerToast('기본정보 수정을 실패했습니다☹', 'danger');
+      } finally {
+        await hideLoadingMask();
       }
     };
 
