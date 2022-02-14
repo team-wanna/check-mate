@@ -25,6 +25,7 @@
 import { defineComponent, ref } from 'vue';
 import { useStore } from 'vuex';
 import BaseModal from '../templates/BaseModal.vue';
+import useLoadingMask from '@/composables/loadingMask';
 
 export default defineComponent({
   name: 'SignUpModal',
@@ -40,18 +41,21 @@ export default defineComponent({
     const nickname = ref('');
     const errorMsg = ref('');
     const isShow = ref(JSON.parse(props.visible));
-
+    const { showLoadingMask, hideLoadingMask } = useLoadingMask();
     const singUp = async () => {
       try {
         if (!nickname.value) {
           errorMsg.value = '닉네임을 입력하세요😤';
           return;
         }
+        await showLoadingMask();
         await store.dispatch('user/updateProfile', { name: nickname.value });
         isShow.value = false;
       } catch (error) {
         errorMsg.value = '중복된 닉네임입니다😥';
         console.error(error);
+      } finally {
+        await hideLoadingMask();
       }
     };
     const clickSignUp = () => {

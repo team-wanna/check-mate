@@ -7,16 +7,19 @@ import { loginAPI } from '@/api/modules/auth';
 import router from '@/router';
 import { SocialType } from '@/utils/define';
 import { LoginReq } from '@/api/modules/auth/types';
+import useLoadingMask from '@/composables/loadingMask';
 
 export default defineComponent({
   name: 'Login',
   setup() {
     const url = new URL(window.location.href);
+    const { showLoadingMask, hideLoadingMask } = useLoadingMask();
 
     const login = async (_url: URL) => {
       const code = _url.searchParams.get('code');
       if (code) {
         try {
+          await showLoadingMask();
           const loginType = window.localStorage.getItem(
             'loginType',
           ) as SocialType;
@@ -35,6 +38,8 @@ export default defineComponent({
           });
         } catch (error) {
           console.error(error);
+        } finally {
+          await hideLoadingMask();
         }
       }
     };

@@ -2,6 +2,7 @@ import { createStore } from 'vuex';
 import { RootState, SocialType } from '@/utils/define';
 import user from '@/store/modules/user';
 import toast from '@/store/modules/toast';
+import loadingMask from '@/store/modules/loadingMask';
 
 export default createStore<RootState>({
   state: {
@@ -15,5 +16,5 @@ export default createStore<RootState>({
   getters: {
     getLoginType: (state: RootState) => state.loginType,
   },
-  modules: { user, toast },
+  modules: { user, toast, loadingMask },
 });
