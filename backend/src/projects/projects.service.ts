@@ -20,10 +20,10 @@ export class ProjectsService {
     private readonly awsService: AwsService,
   ) {}
 
-  async getAllProjects(page, pageSize, locations, skills) {
+  async getAllProjects(page, size, locations, skills) {
     page = page ? (page <= 0 ? 1 : page) : 1;
-    pageSize = pageSize ? (pageSize <= 0 ? 15 : page) : 15;
-    const offset = (page - 1) * pageSize;
+    size = size ? (size <= 0 ? 15 : size) : 15;
+    const offset = (page - 1) * size;
     const projects = await getConnection()
       .createQueryBuilder(Project, 'project')
       .select([
@@ -44,7 +44,7 @@ export class ProjectsService {
       .andWhere(`TRUE ${skills ? 'AND skill.value IN (:skills)' : ''}`, {
         skills,
       })
-      .limit(pageSize)
+      .limit(size)
       .offset(offset)
       .orderBy('project.createdAt', 'DESC')
       .getMany();

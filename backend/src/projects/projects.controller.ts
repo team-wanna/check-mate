@@ -41,11 +41,13 @@ export class ProjectsController {
   @ApiQuery({
     name: 'page',
     required: false,
+    type: Number,
     description: '현재 페이지, 비어있을 경우 기본값 1',
   })
   @ApiQuery({
-    name: 'pageSize',
+    name: 'size',
     required: false,
+    type: Number,
     description: '가져올 프로젝트 카드 정보 개수, 비어있을 경우 기본값 15',
   })
   @ApiQuery({
@@ -58,17 +60,12 @@ export class ProjectsController {
   })
   @Get()
   getAllProjects(
-    @Query('page') page?: string,
-    @Query('pageSize') pageSize?: string,
+    @Query('page', ParseIntPipe) page?: number,
+    @Query('size', ParseIntPipe) size?: number,
     @Query('locations') locations?: string[],
     @Query('skills') skills?: string[],
   ) {
-    return this.projectsService.getAllProjects(
-      page,
-      pageSize,
-      locations,
-      skills,
-    );
+    return this.projectsService.getAllProjects(page, size, locations, skills);
   }
 
   @ApiOperation({ summary: '프로젝트 생성하기' })
