@@ -54,32 +54,7 @@
 
             <div class="info-item-box">
               <label class="info-title">📚기술스택</label>
-              <input
-                type="search"
-                placeholder="기술스택을 검색하세요!"
-                class="info-content"
-                @input="searchSkill"
-                @focusout="onFocusoutSkillInput"
-                @keydown.down.prevent="onKeydownSkillInput"
-                @keydown.up.prevent="onKeyupSkillInput"
-                @keydown.enter="selectSkill"
-                ref="skillInputRef"
-              />
-              <ul v-if="searchedSkillData.length" class="skill-list">
-                <li
-                  v-for="(skillData, idx) in searchedSkillData"
-                  :key="idx"
-                  class="skill-list__content"
-                  @mouseover="onMouseoverSkill(idx)"
-                  @mousedown="selectSkill"
-                  :class="{
-                    'skill-list__content--focus': currentSkill === idx,
-                  }"
-                >
-                  {{ skillData.name }}
-                </li>
-              </ul>
-
+              <skill-search v-model:skills="profile.skills" />
               <skill-item
                 v-for="(skill, idx) in profile.skills"
                 :key="skill.id"
@@ -125,22 +100,21 @@ import {
   editProfileAPI,
   editProfileImageAPI,
   getUserProfileAPI,
-  createUserSkill,
   deleteUserSkill,
   editDefaultProfileImageAPI,
 } from '@/api/modules/users';
 import useToast from '@/composables/toast';
-import { getSkillsAPI } from '@/api/modules/skills';
 import SkillItem from '@/components/UI/atoms/SkillItem.vue';
-import { EditProfile } from '@/api/modules/users/types';
+import { EditProfile, Profile } from '@/api/modules/users/types';
 import { Skill } from '@/api/modules/skills/types';
 import api from '@/api';
 import ProfileIconModal from '@/components/pages/ProfileIconModal.vue';
 import useLoadingMask from '@/composables/loadingMask';
+import SkillSearch from '@/components/UI/atoms/SkillSearch.vue';
 
 export default defineComponent({
   name: 'Profile',
-  components: { ProfileIconModal, SkillItem, BaseLayout },
+  components: { SkillSearch, ProfileIconModal, SkillItem, BaseLayout },
   setup() {
     // TODO - 새로고침시 토큰 유지를 위해 임시로 token 넣음. 추후 공통함수로 묶어야함.
     const token = window.sessionStorage.getItem('token');
@@ -152,11 +126,10 @@ export default defineComponent({
     const { triggerToast } = useToast();
     const { showLoadingMask, hideLoadingMask } = useLoadingMask();
     const profileData = new FormData();
-    const profile = ref(_.cloneDeep(store.getters['user/getProfile']));
+    const profile = ref<Profile>(_.cloneDeep(store.getters['user/getProfile']));
     const profileImage = ref(profile.value.profileImageUrl);
     const skillInputRef = ref();
     const searchedSkillData = ref<Skill[]>([]);
-    const currentSkill = ref<number>(-1);
     const registeredSkills = ref<Skill[]>([]);
     const showProfileIconModal = ref(false);
     const profileFileName = store.getters[
@@ -166,54 +139,6 @@ export default defineComponent({
       // eslint-disable-next-line no-restricted-globals
       isNaN(+profileFileName) ? -1 : +profileFileName[0],
     );
-    let searchSkillTimeout = -1;
-
-    const searchSkill = (event: any) => {
-      clearTimeout(searchSkillTimeout);
-      searchSkillTimeout = setTimeout(async () => {
-        const { data } = await getSkillsAPI(event.target.value);
-
-        searchedSkillData.value = data.data.length
-          ? data.data
-          : [
-              {
-                id: -1,
-                name: '검색 결과가 없습니다. 영어로 검색해 주세요!',
-                value: 'noSkillData',
-              },
-            ];
-        currentSkill.value = 0;
-      }, 300);
-    };
-    const selectSkill = async () => {
-      try {
-        const targetSkill = searchedSkillData.value[currentSkill.value];
-
-        if (targetSkill.id === -1) {
-          return;
-        }
-        const { data } = await createUserSkill(targetSkill.value);
-        if (data.success) {
-          await triggerToast(
-            `${targetSkill.name} 스킬이 등록 되었습니다.`,
-            'success',
-          );
-          profile.value.skills.push(targetSkill);
-        } else {
-          await triggerToast(
-            `${targetSkill.name} 스킬 등록을 실패했습니다.`,
-            'danger',
-          );
-        }
-      } catch (error) {
-        console.error(error);
-        await triggerToast(error, 'danger');
-      } finally {
-        searchedSkillData.value = [];
-        skillInputRef.value.value = '';
-        skillInputRef.value.blur();
-      }
-    };
     const deleteSkill = async (idx: number) => {
       try {
         const targetSkill = profile.value.skills[idx];
@@ -281,22 +206,6 @@ export default defineComponent({
       }
     };
 
-    const onMouseoverSkill = (idx: number) => {
-      currentSkill.value = idx;
-    };
-    const onFocusoutSkillInput = () => {
-      searchedSkillData.value = [];
-    };
-    const onKeydownSkillInput = () => {
-      currentSkill.value += 1;
-      currentSkill.value %= searchedSkillData.value.length;
-    };
-    const onKeyupSkillInput = () => {
-      currentSkill.value -= 1;
-      if (currentSkill.value < 0) {
-        currentSkill.value = searchedSkillData.value.length - 1;
-      }
-    };
     const clickProfileIconChangeBtn = () => {
       showProfileIconModal.value = true;
     };
@@ -332,19 +241,12 @@ export default defineComponent({
       profileImage,
       skillInputRef,
       searchedSkillData,
-      currentSkill,
       registeredSkills,
       showProfileIconModal,
       defaultProfileIcon,
       clickProfileImageSaveBtn,
       clickBaseProfileSaveBtn,
-      searchSkill,
-      selectSkill,
       deleteSkill,
-      onMouseoverSkill,
-      onFocusoutSkillInput,
-      onKeydownSkillInput,
-      onKeyupSkillInput,
       clickProfileIconChangeBtn,
       changeDefaultIcon,
       uploadCustomIcon,
@@ -465,27 +367,5 @@ export default defineComponent({
 
 .is-empty {
   font-size: $--font-size-small;
-}
-
-.skill-list {
-  position: absolute;
-  width: 448px;
-  max-height: 200px;
-  overflow-y: auto;
-  border: 2px solid $--color-border;
-  border-radius: 5px;
-  box-sizing: content-box;
-
-  &__content {
-    margin: 1px;
-    height: 40px;
-    padding-left: 8px;
-    line-height: 40px;
-    background-color: #ffffff;
-
-    &--focus {
-      background-color: $--color-primary;
-    }
-  }
 }
 </style>
