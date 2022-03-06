@@ -6,6 +6,7 @@ import {
   faCheckCircle,
   faUpload,
   faFileUpload,
+  faAngleDown,
 } from '@fortawesome/free-solid-svg-icons';
 import {
   faBell,
@@ -33,6 +34,7 @@ library.add(
   faCheckCircle,
   faUpload,
   faFileUpload,
+  faAngleDown,
 );
 
 createApp(App)
