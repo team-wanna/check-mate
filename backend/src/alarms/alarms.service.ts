@@ -9,6 +9,8 @@ export class AlarmsService {
   constructor(
     @InjectRepository(Alarm)
     private readonly alarmsRepository: Repository<Alarm>,
+    @InjectRepository(Project)
+    private readonly projectsRepository: Repository<Project>,
   ) {}
 
   async getAllAlarms(userId) {
@@ -17,7 +19,12 @@ export class AlarmsService {
 
   async createAlarm(userId, data) {
     const { type, projectId, targetId } = data;
-    if (type === 'accept') {
+    if (type === 'apply') {
+      const project = await this.projectsRepository.findOne(projectId);
+      await this.projectsRepository.update(projectId, {
+        applicantCount: project.applicantCount + 1,
+      });
+    } else if (type === 'accept') {
       // 관계 테이블에 추가
       await getConnection()
         .createQueryBuilder()

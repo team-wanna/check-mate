@@ -6,7 +6,6 @@ import {
   Delete,
   Get,
   Param,
-  ParseBoolPipe,
   ParseIntPipe,
   Patch,
   Post,
@@ -51,6 +50,11 @@ export class ProjectsController {
     description: '가져올 프로젝트 카드 정보 개수, 비어있을 경우 기본값 15',
   })
   @ApiQuery({
+    name: 'popular',
+    required: false,
+    type: Boolean,
+  })
+  @ApiQuery({
     name: 'locations',
     required: false,
   })
@@ -60,12 +64,19 @@ export class ProjectsController {
   })
   @Get()
   getAllProjects(
-    @Query('page', ParseIntPipe) page?: number,
-    @Query('size', ParseIntPipe) size?: number,
+    @Query('page') page?: number,
+    @Query('size') size?: number,
+    @Query('popular') popular?: boolean,
     @Query('locations') locations?: string[],
     @Query('skills') skills?: string[],
   ) {
-    return this.projectsService.getAllProjects(page, size, locations, skills);
+    return this.projectsService.getAllProjects(
+      page,
+      size,
+      popular,
+      locations,
+      skills,
+    );
   }
 
   @ApiOperation({ summary: '프로젝트 생성하기' })

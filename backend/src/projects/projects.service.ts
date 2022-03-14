@@ -20,10 +20,13 @@ export class ProjectsService {
     private readonly awsService: AwsService,
   ) {}
 
-  async getAllProjects(page, size, locations, skills) {
+  async getAllProjects(page, size, popular, locations, skills) {
     page = page ? (page <= 0 ? 1 : page) : 1;
     size = size ? (size <= 0 ? 15 : size) : 15;
     const offset = (page - 1) * size;
+    const ORDER_BY_OPTION = popular
+      ? 'project.applicantCount'
+      : 'project.createdAt';
     const projects = await getConnection()
       .createQueryBuilder(Project, 'project')
       .select([
@@ -46,7 +49,7 @@ export class ProjectsService {
       })
       .limit(size)
       .offset(offset)
-      .orderBy('project.createdAt', 'DESC')
+      .orderBy(ORDER_BY_OPTION, 'DESC')
       .getMany();
     return Promise.all(
       projects.map(async (project) => {
