@@ -134,7 +134,7 @@ export class Project extends BaseEntity {
   })
   @ApiProperty({
     description: '스킬',
-    example: '[{"id": 12, "name": "TypeScript"}]',
+    example: '[{"id": 12, "name": "TypeScript", "value": "typescript"}]',
   })
   skills: Skill[];
 
