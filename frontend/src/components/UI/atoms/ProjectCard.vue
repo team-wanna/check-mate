@@ -2,7 +2,11 @@
   <div class="project-card">
     <div class="project-card__container">
       <div class="project-card__header">
-        <img class="project-icon" src="@/assets/logo.png" alt="project icon" />
+        <img
+          class="project-icon"
+          src="@/assets/project-default-image.png"
+          alt="project icon"
+        />
         <p>{{ $props.title }}</p>
       </div>
       <div class="project-card__intro">{{ $props.intro }}</div>
@@ -50,7 +54,7 @@ export default defineComponent({
   background-size: cover;
   background-color: #ffffff;
   border-radius: 14px;
-  margin: 10px;
+  margin: 10px 10px 10px 0;
   cursor: pointer;
   box-shadow: 0 5px 15px rgb(0 0 0 / 15%);
   transition: 0.3s ease;
@@ -68,6 +72,7 @@ export default defineComponent({
 
 .project-card__container {
   display: flex;
+  min-height: 170px;
   flex-direction: column;
   width: calc(100% - 40px);
   padding: 20px;
@@ -89,8 +94,7 @@ export default defineComponent({
 .project-card__skill {
   display: flex;
   align-items: center;
-  margin-left: auto;
-  margin-top: 16px;
+  margin-top: 10px;
 }
 
 .project-icon {
