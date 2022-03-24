@@ -4,6 +4,7 @@
       <img
         src="@/assets/loading-chess.gif"
         style="width: 100px; height: 100px"
+        alt="loading"
       />
     </div>
   </div>
