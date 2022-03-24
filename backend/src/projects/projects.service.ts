@@ -38,6 +38,7 @@ export class ProjectsService {
         'project.isClosed',
         'project.createdAt',
         'project.updatedAt',
+        'project.applicantCount',
       ])
       .leftJoinAndSelect('project.skills', 'skill')
       .where(
@@ -47,8 +48,8 @@ export class ProjectsService {
       .andWhere(`TRUE ${skills ? 'AND skill.value IN (:skills)' : ''}`, {
         skills,
       })
-      .limit(size)
-      .offset(offset)
+      .take(size)
+      .skip(offset)
       .orderBy(ORDER_BY_OPTION, 'DESC')
       .getMany();
     return Promise.all(
