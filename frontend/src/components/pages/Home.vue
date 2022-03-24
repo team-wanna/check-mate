@@ -85,7 +85,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from 'vue';
+import { defineComponent, onMounted, ref, watch } from 'vue';
 import { useStore } from 'vuex';
 import BaseLayout from '@/components/templates/BaseLayout.vue';
 import SignUpModal from '@/components/pages/SignUpModal.vue';
@@ -141,7 +141,7 @@ export default defineComponent({
     ];
     const isSortByPopularity = ref(false);
     const projects = ref<GetProjectsRes[]>();
-
+    const currentPage = ref(1);
     const deleteSkill = (idx: number) => {
       skills.value.splice(idx, 1);
     };
@@ -167,9 +167,10 @@ export default defineComponent({
         }
         const { data } = await getProjectsAPI({
           page: 1,
-          size: 15,
+          size: 9,
           locations: [],
           skills: [],
+          popular: isSortByPopularity.value,
         });
         if (data.success) {
           projects.value = data.data;
@@ -179,7 +180,60 @@ export default defineComponent({
       } finally {
         await hideLoadingMask();
       }
+      document.addEventListener('scroll', async () => {
+        const bottomOfWindow =
+          Math.max(
+            window.pageYOffset,
+            document.documentElement.scrollTop,
+            document.body.scrollTop,
+          ) +
+            window.innerHeight ===
+          document.documentElement.offsetHeight;
+        if (bottomOfWindow) {
+          try {
+            currentPage.value += 1;
+            const { data } = await getProjectsAPI({
+              page: currentPage.value,
+              size: 9,
+              locations: [],
+              skills: [],
+              popular: isSortByPopularity.value,
+            });
+            if (data.success) {
+              projects.value = [...(projects.value ?? []), ...data.data];
+            }
+          } catch (error) {
+            console.log(error);
+          }
+        }
+      });
     });
+
+    watch(
+      (): [
+        { id: number; name: string; value: string }[],
+        string[],
+        boolean,
+      ] => [skills.value, locations.value, isSortByPopularity.value],
+      async (newValue) => {
+        try {
+          currentPage.value = 1;
+          const { data } = await getProjectsAPI({
+            page: 1,
+            size: 9,
+            skills: newValue[0].map((skill) => skill.value),
+            locations: newValue[1],
+            popular: newValue[2],
+          });
+          if (data.success) {
+            projects.value = data.data;
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      },
+      { deep: true },
+    );
 
     return {
       skills,
@@ -244,6 +298,8 @@ export default defineComponent({
         background-color: #ffffff;
 
         &-item {
+          padding: 3px 0;
+
           .location-label {
             padding: 0 15px;
             cursor: pointer;
@@ -282,11 +338,5 @@ export default defineComponent({
       }
     }
   }
-}
-
-.home-main {
-  display: grid;
-  grid: repeat(3, 1fr) / auto-flow;
-  row-gap: 25px;
 }
 </style>

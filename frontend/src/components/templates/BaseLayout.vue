@@ -14,7 +14,7 @@
 
 <style lang="scss" scoped>
 .container {
-  width: calc(50vw);
+  width: 60vw;
   margin: calc($--nav-height * 2) auto;
 }
 </style>
