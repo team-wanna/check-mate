@@ -12,5 +12,6 @@ export const getProjectsAPI = (
       size: getProjectsReq.size ?? 15,
       locations: getProjectsReq.locations ?? [],
       skills: getProjectsReq.skills ?? [],
+      popular: getProjectsReq.popular,
     },
   });
