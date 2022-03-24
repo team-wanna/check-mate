@@ -5,6 +5,7 @@ interface GetProjectsReq {
   size: number;
   locations: string[];
   skills: string[];
+  popular: boolean;
 }
 
 interface GetProjectsRes {
