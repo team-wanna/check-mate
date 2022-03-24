@@ -1,11 +1,13 @@
 <template>
   <nav class="nav-container">
     <div class="item-container">
-      <section class="item-container__item-left" @click="clickHomeBtn">
-        <fa :icon="['fas', 'chess']" class="home-icon" />
-        <a>체크메이트</a>
+      <section class="item-container--left">
+        <div class="item-container__content" @click="clickHomeBtn">
+          <fa :icon="['fas', 'chess']" class="home-icon" />
+          <a>체크메이트</a>
+        </div>
       </section>
-      <section class="item-container__item-right">
+      <section class="item-container--right">
         <login-button />
       </section>
     </div>
@@ -24,9 +26,13 @@ export default defineComponent({
     const clickHomeBtn = () => {
       router.push({ name: 'Home' });
     };
+    const clickProjectBtn = () => {
+      router.push({ name: 'Project' });
+    };
 
     return {
       clickHomeBtn,
+      clickProjectBtn,
     };
   },
 });
@@ -52,15 +58,33 @@ export default defineComponent({
   display: flex;
   justify-content: space-between;
   align-items: center;
-  cursor: pointer;
 
-  a {
-    font-size: 36px;
+  &--left {
+    height: 100%;
+    display: flex;
   }
-}
 
-.home-icon {
-  margin-right: 10px;
-  font-size: 50px;
+  &__content {
+    height: 100%;
+    font-size: 36px;
+    margin-right: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+
+    .home-icon {
+      margin-right: 10px;
+      font-size: 50px;
+    }
+
+    &--active {
+      color: $--color-primary;
+      border-bottom: $--color-primary 4px solid;
+    }
+
+    &:hover {
+      color: $--color-primary;
+    }
+  }
 }
 </style>

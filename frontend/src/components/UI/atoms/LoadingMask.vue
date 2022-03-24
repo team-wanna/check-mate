@@ -1,9 +1,11 @@
 <template>
   <div v-if="isShow" class="loading-mask">
     <div class="loading-spinner">
-      <svg viewBox="25 25 50 50" class="circular">
-        <circle r="20" cx="50" cy="50" fill="none" class="path"></circle>
-      </svg>
+      <img
+        src="@/assets/loading-chess.gif"
+        style="width: 100px; height: 100px"
+        alt="loading"
+      />
     </div>
   </div>
 </template>

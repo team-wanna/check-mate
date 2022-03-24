@@ -1,8 +1,8 @@
 <template>
   <input
     type="text"
-    placeholder="기술스택을 검색하세요!"
-    class="skill-search info-content"
+    :placeholder="$props.placeholder"
+    class="skill-search"
     @input="searchSkill"
     @focusout="onFocusoutSkillInput"
     @keydown.down.prevent="onKeydownSkillInput"
@@ -30,12 +30,18 @@
 import { computed, defineComponent, PropType, ref } from 'vue';
 import { getSkillsAPI } from '@/api/modules/skills';
 import { Skill } from '@/api/modules/skills/types';
-import { createUserSkill } from '@/api/modules/users';
-import useToast from '@/composables/toast';
 
 export default defineComponent({
   name: 'SkillSearch',
   props: {
+    placeholder: {
+      type: String,
+      default: '기술스택을 검색하세요!',
+    },
+    width: {
+      type: Number,
+      default: 300,
+    },
     skills: {
       type: Array as PropType<Skill[]>,
       required: true,
@@ -43,7 +49,6 @@ export default defineComponent({
   },
   emits: ['update:skills'],
   setup(props, { emit }) {
-    const { triggerToast } = useToast();
     const currentSkill = ref<number>(-1);
     const searchedSkillData = ref<Skill[]>([]);
     const skillInputRef = ref();
@@ -63,7 +68,7 @@ export default defineComponent({
           : [
               {
                 id: -1,
-                name: '검색 결과가 없습니다. 영어로 검색해 주세요!',
+                name: '검색 결과가 없습니다.',
                 value: 'noSkillData',
               },
             ];
@@ -71,33 +76,40 @@ export default defineComponent({
       }, 300);
     };
     const selectSkill = async () => {
-      try {
-        const targetSkill = searchedSkillData.value[currentSkill.value];
-
-        if (targetSkill.id === -1) {
-          return;
-        }
-        const { data } = await createUserSkill(targetSkill.value);
-        if (data.success) {
-          await triggerToast(
-            `${targetSkill.name} 스킬이 등록 되었습니다.`,
-            'success',
-          );
-          skills.value = [targetSkill];
-        } else {
-          await triggerToast(
-            `${targetSkill.name} 스킬 등록을 실패했습니다.`,
-            'danger',
-          );
-        }
-      } catch (error) {
-        console.error(error);
-        await triggerToast(error, 'danger');
-      } finally {
-        searchedSkillData.value = [];
-        skillInputRef.value.value = '';
-        skillInputRef.value.blur();
+      const targetSkill = searchedSkillData.value[currentSkill.value];
+      if (targetSkill.id === -1) {
+        return;
       }
+      skills.value = [targetSkill];
+      searchedSkillData.value = [];
+      skillInputRef.value.value = '';
+      // try {
+      //   const targetSkill = searchedSkillData.value[currentSkill.value];
+      //
+      //   if (targetSkill.id === -1) {
+      //     return;
+      //   }
+      //   const { data } = await createUserSkill(targetSkill.value);
+      //   if (data.success) {
+      //     await triggerToast(
+      //       `${targetSkill.name} 스킬이 등록 되었습니다.`,
+      //       'success',
+      //     );
+      //     skills.value = [targetSkill];
+      //   } else {
+      //     await triggerToast(
+      //       `${targetSkill.name} 스킬 등록을 실패했습니다.`,
+      //       'danger',
+      //     );
+      //   }
+      // } catch (error) {
+      //   console.error(error);
+      //   await triggerToast(error, 'danger');
+      // } finally {
+      //   searchedSkillData.value = [];
+      //   skillInputRef.value.value = '';
+      //   skillInputRef.value.blur();
+      // }
     };
     const onFocusoutSkillInput = () => {
       searchedSkillData.value = [];
@@ -115,9 +127,13 @@ export default defineComponent({
     const onMouseoverSkill = (idx: number) => {
       currentSkill.value = idx;
     };
+
     return {
       currentSkill,
       searchedSkillData,
+      skillInputRef,
+      skillSearchWidth: `${props.width}px`,
+      skillListWidth: `${props.width + 8}px`,
       searchSkill,
       selectSkill,
       onFocusoutSkillInput,
@@ -132,33 +148,38 @@ export default defineComponent({
 <style scoped lang="scss">
 .skill-search {
   display: block;
-  width: 440px;
+  width: v-bind(skillSearchWidth);
   min-height: 40px;
   padding-left: 8px;
-  border: 2px solid $--color-border;
+  border: 1px solid $--color-border;
   border-radius: 5px;
   box-sizing: content-box;
   font-family: BMHANNAPro, serif;
-  font-size: $--font-size-small;
+  font-size: $--font-size-medium;
 
+  &:hover,
   &:focus {
     border-color: $--color-primary;
-    box-shadow: 0 0 0 1px $--color-primary;
     outline: none;
+  }
+
+  &::placeholder {
+    color: #b1b1b7ff;
   }
 }
 
 .skill-list {
   position: absolute;
-  width: 448px;
+  top: 240px;
+  width: v-bind(skillListWidth);
   max-height: 200px;
   overflow-y: auto;
-  border: 2px solid $--color-border;
+  border: 1px solid $--color-border;
   border-radius: 5px;
   box-sizing: content-box;
+  font-size: $--font-size-small;
 
   &__content {
-    margin: 1px;
     height: 40px;
     padding-left: 8px;
     line-height: 40px;
