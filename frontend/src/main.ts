@@ -7,11 +7,18 @@ import {
   faUpload,
   faFileUpload,
   faAngleDown,
+  faStar as fasStar,
+  faCommentDots,
+  faChild,
+  faCalendarCheck,
+  faLocationArrow,
+  faRocket,
 } from '@fortawesome/free-solid-svg-icons';
 import {
   faBell,
   faUserCircle,
   faWindowClose,
+  faStar as farStar,
 } from '@fortawesome/free-regular-svg-icons';
 import {
   faGoogle,
@@ -35,6 +42,13 @@ library.add(
   faUpload,
   faFileUpload,
   faAngleDown,
+  fasStar,
+  farStar,
+  faCommentDots,
+  faChild,
+  faCalendarCheck,
+  faLocationArrow,
+  faRocket,
 );
 
 createApp(App)

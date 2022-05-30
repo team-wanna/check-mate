@@ -98,8 +98,8 @@ import SkillItem from '@/components/UI/atoms/SkillItem.vue';
 import { Skill } from '@/api/modules/skills/types';
 import LocationItem from '@/components/UI/atoms/locationItem.vue';
 import PopularityItem from '@/components/UI/atoms/PopularityItem.vue';
-import { GetProjectsRes } from '@/api/modules/projects/types';
-import { getProjectsAPI } from '@/api/modules/projects';
+import { GetProjectListRes } from '@/api/modules/projects/types';
+import { getProjectListAPI } from '@/api/modules/projects';
 
 export default defineComponent({
   name: 'Home',
@@ -140,7 +140,7 @@ export default defineComponent({
       '제주',
     ];
     const isSortByPopularity = ref(false);
-    const projects = ref<GetProjectsRes[]>();
+    const projects = ref<GetProjectListRes[]>();
     const currentPage = ref(1);
     const deleteSkill = (idx: number) => {
       skills.value.splice(idx, 1);
@@ -165,7 +165,7 @@ export default defineComponent({
           await store.dispatch('user/fetchProfile');
           await triggerToast('로그인 되었습니다.', 'success');
         }
-        const { data } = await getProjectsAPI({
+        const { data } = await getProjectListAPI({
           page: 1,
           size: 9,
           locations: [],
@@ -192,7 +192,7 @@ export default defineComponent({
         if (bottomOfWindow) {
           try {
             currentPage.value += 1;
-            const { data } = await getProjectsAPI({
+            const { data } = await getProjectListAPI({
               page: currentPage.value,
               size: 9,
               locations: [],
@@ -218,7 +218,7 @@ export default defineComponent({
       async (newValue) => {
         try {
           currentPage.value = 1;
-          const { data } = await getProjectsAPI({
+          const { data } = await getProjectListAPI({
             page: 1,
             size: 9,
             skills: newValue[0].map((skill) => skill.value),

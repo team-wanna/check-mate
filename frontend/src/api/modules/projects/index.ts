@@ -1,17 +1,25 @@
 import api from '@/api';
 import { CommonResponse } from '@/utils/define';
-import { GetProjectsReq, GetProjectsRes } from '@/api/modules/projects/types';
+import {
+  GetProjectListReq,
+  GetProjectListRes,
+  GetProjectInfoRes,
+} from '@/api/modules/projects/types';
 
-// eslint-disable-next-line import/prefer-default-export
-export const getProjectsAPI = (
-  getProjectsReq: GetProjectsReq,
-): CommonResponse<GetProjectsRes> =>
+const getProjectListAPI = (
+  getProjectListReq: Partial<GetProjectListReq>,
+): CommonResponse<GetProjectListRes> =>
   api.apiInstance.get('/projects', {
     params: {
-      page: getProjectsReq.page ?? 1,
-      size: getProjectsReq.size ?? 15,
-      locations: getProjectsReq.locations ?? [],
-      skills: getProjectsReq.skills ?? [],
-      popular: getProjectsReq.popular,
+      page: getProjectListReq.page ?? 1,
+      size: getProjectListReq.size ?? 15,
+      locations: getProjectListReq.locations ?? [],
+      skills: getProjectListReq.skills ?? [],
+      popular: getProjectListReq.popular,
     },
   });
+
+const getProjectInfoAPI = (id: number): CommonResponse<GetProjectInfoRes> =>
+  api.apiInstance.get(`/projects/${id}`);
+
+export { getProjectListAPI, getProjectInfoAPI };
