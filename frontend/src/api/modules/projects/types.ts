@@ -1,6 +1,6 @@
 import { Skill } from '@/api/modules/skills/types';
 
-interface GetProjectsReq {
+interface GetProjectListReq {
   page: number;
   size: number;
   locations: string[];
@@ -8,7 +8,7 @@ interface GetProjectsReq {
   popular: boolean;
 }
 
-interface GetProjectsRes {
+interface GetProjectListRes {
   id: number;
   title: string;
   logoImageUrl: string | null;
@@ -20,4 +20,17 @@ interface GetProjectsRes {
   skills: Skill[];
 }
 
-export { GetProjectsReq, GetProjectsRes };
+interface GetProjectInfoRes {
+  id: number;
+  ownerId: string;
+  title: string;
+  logoImageUrl: string;
+  intro: string;
+  description: string;
+  location: string;
+  isClosed: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export { GetProjectListReq, GetProjectListRes, GetProjectInfoRes };
