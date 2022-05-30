@@ -23,11 +23,11 @@ const routes: Array<RouteRecordRaw> = [
       ),
   },
   {
-    path: '/projectDetail',
-    name: 'Project Detail',
+    path: '/projects/:id',
+    name: 'Project',
     component: () =>
       import(
-        /* webpackChunkName: "Project Detail) */ '@/components/pages/ProjectDetail.vue'
+        /* webpackChunkName: "Project Detail) */ '@/components/pages/Project.vue'
       ),
   },
 ];
