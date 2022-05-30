@@ -1,5 +1,5 @@
 <template>
-  <div class="project-card">
+  <div class="project-card" @click="moveToProject($props.ProjectInfo.id)">
     <div class="project-card__container">
       <div class="project-card__header">
         <img
@@ -7,12 +7,12 @@
           src="@/assets/project-default-image.png"
           alt="project icon"
         />
-        <p>{{ $props.title }}</p>
+        <p>{{ $props.ProjectInfo.title }}</p>
       </div>
-      <div class="project-card__intro">{{ $props.intro }}</div>
+      <div class="project-card__intro">{{ $props.ProjectInfo.intro }}</div>
       <div class="project-card__skill">
         <skill-item
-          v-for="(skill, idx) in $props.skills"
+          v-for="(skill, idx) in $props.ProjectInfo.skills"
           :key="idx"
           :skill-info="skill"
           :readonly="true"
@@ -23,25 +23,34 @@
 </template>
 
 <script lang="ts">
+import { useRouter } from 'vue-router';
 import { defineComponent, PropType } from 'vue';
 import SkillItem from '@/components/UI/atoms/SkillItem.vue';
-import { Skill } from '@/api/modules/skills/types';
+import { GetProjectListRes } from '@/api/modules/projects/types';
 
 export default defineComponent({
   name: 'ProjectCard',
   components: { SkillItem },
   props: {
-    title: {
-      type: String,
-      default: 'Project Title',
+    ProjectInfo: {
+      type: Object as PropType<GetProjectListRes>,
+      required: true,
     },
-    intro: {
-      type: String,
-      default: 'Project Intro',
-    },
-    skills: {
-      type: Object as PropType<Skill[]>,
-    },
+  },
+  setup() {
+    const router = useRouter();
+    const moveToProject = (projectId: number) => {
+      router.push({
+        name: 'Project',
+        params: {
+          id: projectId,
+        },
+      });
+    };
+
+    return {
+      moveToProject,
+    };
   },
 });
 </script>
