@@ -23,22 +23,20 @@ import { defineComponent, onMounted, ref } from 'vue';
 import BaseLayout from '@/components/templates/BaseLayout.vue';
 import SkillItem from '@/components/UI/atoms/SkillItem.vue';
 import ProjectCard from '@/components/UI/atoms/ProjectCard.vue';
-import { getProjectsAPI } from '@/api/modules/projects';
-import { GetProjectsRes } from '@/api/modules/projects/types';
+import { getProjectListAPI } from '@/api/modules/projects';
+import { GetProjectListRes } from '@/api/modules/projects/types';
 
 export default defineComponent({
   name: 'Project',
   components: { BaseLayout, SkillItem, ProjectCard },
   setup() {
-    const projectData = ref<GetProjectsRes[]>();
+    const projectData = ref<GetProjectListRes[]>();
 
     onMounted(async () => {
       try {
-        const { data } = await getProjectsAPI({
+        const { data } = await getProjectListAPI({
           page: 1,
           size: 15,
-          locations: [],
-          skills: [],
         });
         if (data.success) {
           projectData.value = data.data;
