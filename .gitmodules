@@ -1,0 +1,3 @@
+[submodule "check-mate-submodule"]
+	path = check-mate-submodule
+	url = https://github.com/team-wanna/check-mate-submodule.git
