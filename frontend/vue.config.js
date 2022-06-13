@@ -1,5 +1,9 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const path = require('path');
+const dotenv = require('dotenv');
+
+dotenv.config({
+  path: '../check-mate-submodule/frontend/.env',
+});
 
 module.exports = {
   devServer: {
